@@ -30,6 +30,7 @@
     <div class="section-head">
       <div class="eyebrow" data-key="home_section1_eyebrow">L'école</div>
       <h2 data-key="home_section1_title">Une seule académie, cinq roda</h2>
+      <img id="section1-image" src="" alt="" style="display:none;width:100%;max-width:600px;margin-top:24px;border:1px solid var(--grey-line);">
     </div>
     <div class="grid grid-3">
       <div class="card" style="padding:0;overflow:hidden;">
@@ -65,6 +66,7 @@
     <div class="section-head">
       <div class="eyebrow" data-key="home_locations_eyebrow">Nos lieux</div>
       <h2 data-key="home_locations_title">Cinq sites, une même énergie</h2>
+      <img id="locations-image" src="" alt="" style="display:none;width:100%;max-width:600px;margin-top:24px;border:1px solid var(--grey-line);">
     </div>
     <div id="locations-preview" class="grid grid-3">
       <p style="color:var(--grey)">Chargement des lieux…</p>
@@ -80,6 +82,7 @@
     <div class="section-head">
       <div class="eyebrow" data-key="home_events_eyebrow">Agenda</div>
       <h2 data-key="home_events_title">Prochains événements</h2>
+      <img id="events-image" src="" alt="" style="display:none;width:100%;max-width:600px;margin-top:24px;border:1px solid var(--grey-line);">
     </div>
     <div id="events-preview"><p style="color:var(--grey)">Chargement des événements…</p></div>
     <div style="margin-top:24px;">
@@ -102,9 +105,12 @@
     if (!data) return;
     const imageTargets = {
       home_hero_image: "hero-image",
+      home_section1_image: "section1-image",
       home_card1_image: "card1-image",
       home_card2_image: "card2-image",
       home_card3_image: "card3-image",
+      home_locations_image: "locations-image",
+      home_events_image: "events-image",
     };
     data.forEach(row => {
       if (imageTargets[row.key]) {

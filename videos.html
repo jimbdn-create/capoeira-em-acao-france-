@@ -55,6 +55,7 @@
           ${v.title ? `<h3 style="margin:0 0 6px;">${v.title}</h3>` : ""}
           ${v.description ? `<p>${v.description}</p>` : ""}
         </div>
+        ${v.thumbnail_url ? `<img src="${v.thumbnail_url}" alt="${v.title || ''}" style="width:100%;display:block;">` : ""}
       </div>
     `).join("");
   }

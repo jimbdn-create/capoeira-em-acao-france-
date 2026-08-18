@@ -171,6 +171,7 @@
             <div class="form-field"><label>Titre</label><input type="text" id="vd-title"></div>
             <div class="form-field"><label>URL vidéo (YouTube)</label><input type="url" id="vd-url" required></div>
             <div class="form-field"><label>Description</label><textarea id="vd-description"></textarea></div>
+            <div class="form-field"><label>Photo / miniature (JPEG ou GIF)</label><input type="file" id="vd-thumb" accept=".jpg,.jpeg,.png,.gif"></div>
             <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
           </form>
         </div>
@@ -528,10 +529,18 @@
 
   document.getElementById("form-video").addEventListener("submit", async (e) => {
     e.preventDefault();
+    let thumbUrl = null;
+    try {
+      thumbUrl = await uploadFileIfAny(document.getElementById("vd-thumb"), "videos");
+    } catch (err) {
+      alert(err.message);
+      return;
+    }
     const { error } = await supabaseClient.from("gallery_videos").insert({
       title: document.getElementById("vd-title").value,
       video_url: document.getElementById("vd-url").value,
       description: document.getElementById("vd-description").value,
+      thumbnail_url: thumbUrl,
     });
     if (error) { alert("Erreur : " + error.message); console.error(error); return; }
     e.target.reset();
@@ -712,9 +721,12 @@
     contact_general_email: "Email de contact général (pied de page, toutes les pages)",
     contact_general_phone: "Téléphone de contact général (optionnel)",
     home_hero_image: "Photo du bandeau principal (page d'accueil)",
+    home_section1_image: "Photo sous le titre \"École\"",
     home_card1_image: "Photo — Carte 1 (Transmission)",
     home_card2_image: "Photo — Carte 2 (Communauté)",
     home_card3_image: "Photo — Carte 3 (Événements)",
+    home_locations_image: "Photo sous le titre \"Nos lieux\"",
+    home_events_image: "Photo sous le titre \"Agenda\"",
   };
 
   async function loadContentForm() {
