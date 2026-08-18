@@ -48,7 +48,8 @@
     <button class="tab-btn" data-tab="photos">Galerie photos</button>
     <button class="tab-btn" data-tab="videos">Galerie vidéos</button>
     <button class="tab-btn" data-tab="courses">Cours en ligne</button>
-    <button class="tab-btn" id="logout-btn" style="margin-top:20px;color:var(--red);">Se déconnecter</button>
+    <button class="tab-btn" data-tab="account" style="margin-top:20px;">Mon compte</button>
+    <button class="tab-btn" id="logout-btn" style="color:var(--red);">Se déconnecter</button>
     <a href="../index.html" class="tab-btn" style="display:block;">&larr; Voir le site</a>
   </aside>
 
@@ -168,6 +169,22 @@
           <table class="admin-table"><thead><tr><th>Titre</th><th>Professeur</th><th></th></tr></thead>
             <tbody id="courses-table"></tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MON COMPTE -->
+    <section class="tab-panel" id="panel-account">
+      <div class="panel-cols" style="grid-template-columns:400px;">
+        <div class="box">
+          <h3>Changer mon mot de passe</h3>
+          <div id="pwd-error" style="display:none;background:#fde8e8;color:var(--red-dark);padding:10px 14px;font-size:.88rem;margin-bottom:16px;"></div>
+          <div id="pwd-success" style="display:none;background:#e6f4ea;color:#1e7a34;padding:10px 14px;font-size:.88rem;margin-bottom:16px;"></div>
+          <form id="form-password">
+            <div class="form-field"><label>Nouveau mot de passe</label><input type="password" id="new-password" required minlength="6" autocomplete="new-password"></div>
+            <div class="form-field"><label>Confirmer</label><input type="password" id="new-password2" required minlength="6" autocomplete="new-password"></div>
+            <button type="submit" class="btn btn-red" style="width:100%;">Mettre à jour</button>
+          </form>
         </div>
       </div>
     </section>
@@ -326,6 +343,33 @@
     await supabaseClient.from(table).delete().eq("id", id);
     reload();
   }
+
+  // --- MON COMPTE : changement de mot de passe ---
+  document.getElementById("form-password").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pw1 = document.getElementById("new-password").value;
+    const pw2 = document.getElementById("new-password2").value;
+    const errEl = document.getElementById("pwd-error");
+    const okEl = document.getElementById("pwd-success");
+    errEl.style.display = "none";
+    okEl.style.display = "none";
+
+    if (pw1 !== pw2) {
+      errEl.textContent = "Les deux mots de passe ne correspondent pas.";
+      errEl.style.display = "block";
+      return;
+    }
+
+    const { error } = await supabaseClient.auth.updateUser({ password: pw1 });
+    if (error) {
+      errEl.textContent = "Erreur : " + error.message;
+      errEl.style.display = "block";
+      return;
+    }
+    okEl.textContent = "Mot de passe mis à jour avec succès.";
+    okEl.style.display = "block";
+    e.target.reset();
+  });
 
   loadLocations();
   loadEvents();
