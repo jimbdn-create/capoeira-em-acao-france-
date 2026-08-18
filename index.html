@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capoeira em Ação France — École de Capoeira, Mestre Cascavel</title>
+<meta name="description" content="École de Capoeira em Ação France, affiliée à Mestre Cascavel. Cours, stages et événements à Longjumeau, Paris 13e, Cergy-le-Haut, Les Lilas et Aix-en-Provence.">
+<link rel="icon" href="assets/img/logo-badge.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">École affiliée — Mestre Cascavel</div>
+    <h1>La capoeira,<br>art, jeu <span class="accent">et combat</span></h1>
+    <p class="lead">Capoeira em Ação France rassemble cinq lieux de pratique en Île-de-France et à Aix-en-Provence, pour tous les âges et tous les niveaux.</p>
+    <div class="cta-row">
+      <a href="lieux.html" class="btn btn-red">Trouver un cours</a>
+      <a href="capoeira.html" class="btn btn-outline">Découvrir la capoeira</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">L'école</div>
+      <h2>Une seule académie, cinq roda</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="num">01</div>
+        <h3>Transmission</h3>
+        <p>Un enseignement fidèle à la tradition de la capoeira, porté par des professeurs formés au sein de l'académie internationale du Mestre Cascavel.</p>
+      </div>
+      <div class="card">
+        <div class="num">02</div>
+        <h3>Communauté</h3>
+        <p>Enfants, adultes, débutants ou confirmés : chaque roda est un lieu d'échange, de musique et de progression collective.</p>
+      </div>
+      <div class="card">
+        <div class="num">03</div>
+        <h3>Événements</h3>
+        <p>Stages, batizados et rodas ouvertes rythment l'année dans nos différents lieux de pratique.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Nos lieux</div>
+      <h2>Cinq sites, une même énergie</h2>
+    </div>
+    <div id="locations-preview" class="grid grid-3">
+      <p style="color:var(--grey)">Chargement des lieux…</p>
+    </div>
+    <div style="margin-top:34px;">
+      <a href="lieux.html" class="btn btn-outline-dark">Voir tous les lieux et horaires</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Agenda</div>
+      <h2>Prochains événements</h2>
+    </div>
+    <div id="events-preview"><p style="color:var(--grey)">Chargement des événements…</p></div>
+    <div style="margin-top:24px;">
+      <a href="evenements.html" class="btn btn-outline-dark">Voir le calendrier complet</a>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader("index.html");
+  renderFooter();
+
+  async function loadLocationsPreview() {
+    const el = document.getElementById("locations-preview");
+    const { data, error } = await supabaseClient.from("locations").select("*").limit(3);
+    if (error || !data || data.length === 0) {
+      el.innerHTML = `<p style="color:var(--grey)">Les lieux seront affichés ici dès que le contenu sera publié.</p>`;
+      return;
+    }
+    el.innerHTML = data.map(loc => `
+      <div class="location-card">
+        <div class="tag">Lieu de cours</div>
+        <h3>${loc.name}</h3>
+        ${loc.schedule ? `<div class="meta">${loc.schedule}</div>` : ""}
+        ${loc.address ? `<div class="meta">${loc.address}</div>` : ""}
+      </div>
+    `).join("");
+  }
+
+  async function loadEventsPreview() {
+    const el = document.getElementById("events-preview");
+    const { data, error } = await supabaseClient
+      .from("events").select("*, locations(name)")
+      .gte("event_date", new Date().toISOString())
+      .order("event_date", { ascending: true }).limit(3);
+    if (error || !data || data.length === 0) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">📅</div>Aucun événement à venir pour le moment.</div>`;
+      return;
+    }
+    el.innerHTML = data.map(ev => {
+      const d = new Date(ev.event_date);
+      return `
+        <div class="event-row">
+          <div class="event-date">
+            <span class="d">${d.getDate()}</span>
+            <span class="m">${d.toLocaleDateString('fr-FR', { month: 'short' })}</span>
+          </div>
+          <div class="event-body">
+            <h3>${ev.title}<span class="badge-type">${ev.event_type}</span></h3>
+            ${ev.locations ? `<div class="loc">${ev.locations.name}</div>` : ""}
+            ${ev.description ? `<p>${ev.description}</p>` : ""}
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  loadLocationsPreview();
+  loadEventsPreview();
+</script>
+</body>
+</html>

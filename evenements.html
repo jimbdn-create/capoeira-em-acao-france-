@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Événements & stages — Capoeira em Ação France</title>
+<link rel="icon" href="assets/img/logo-badge.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<section class="hero" style="padding:80px 0 100px;">
+  <div class="wrap">
+    <div class="eyebrow">Agenda</div>
+    <h1>Événements <span class="accent">&amp; stages</span></h1>
+    <p class="lead">Cours réguliers, stages exceptionnels et rodas ouvertes dans nos différents lieux.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div id="events-list"><p style="color:var(--grey)">Chargement…</p></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader("evenements.html");
+  renderFooter();
+
+  async function loadEvents() {
+    const el = document.getElementById("events-list");
+    const { data, error } = await supabaseClient
+      .from("events").select("*, locations(name)")
+      .order("event_date", { ascending: true });
+    if (error || !data || data.length === 0) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">📅</div>Aucun événement publié pour le moment. Revenez bientôt !</div>`;
+      return;
+    }
+    el.innerHTML = data.map(ev => {
+      const d = new Date(ev.event_date);
+      return `
+        <div class="event-row">
+          <div class="event-date">
+            <span class="d">${d.getDate()}</span>
+            <span class="m">${d.toLocaleDateString('fr-FR', { month: 'short' })}</span>
+          </div>
+          <div class="event-body">
+            <h3>${ev.title}<span class="badge-type">${ev.event_type}</span></h3>
+            ${ev.locations ? `<div class="loc">${ev.locations.name}</div>` : ""}
+            ${ev.description ? `<p>${ev.description}</p>` : ""}
+          </div>
+        </div>`;
+    }).join("");
+  }
+  loadEvents();
+</script>
+</body>
+</html>

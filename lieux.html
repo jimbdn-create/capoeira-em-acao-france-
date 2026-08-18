@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos lieux de cours — Capoeira em Ação France</title>
+<link rel="icon" href="assets/img/logo-badge.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<section class="hero" style="padding:80px 0 100px;">
+  <div class="wrap">
+    <div class="eyebrow">Île-de-France & Provence</div>
+    <h1>Nos <span class="accent">lieux</span> de cours</h1>
+    <p class="lead">Cinq sites de pratique : Longjumeau, Paris 13e, Cergy-le-Haut, Les Lilas et Aix-en-Provence.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div id="locations-list" class="grid grid-3">
+      <p style="color:var(--grey)">Chargement des lieux…</p>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader("lieux.html");
+  renderFooter();
+
+  async function loadLocations() {
+    const el = document.getElementById("locations-list");
+    const { data, error } = await supabaseClient.from("locations").select("*").order("name");
+    if (error || !data || data.length === 0) {
+      el.innerHTML = `<div class="empty-state"><div class="icon">📍</div>Les lieux seront affichés ici dès que le contenu sera publié.</div>`;
+      return;
+    }
+    el.innerHTML = data.map(loc => `
+      <div class="location-card">
+        <div class="tag">Lieu de cours</div>
+        <h3>${loc.name}</h3>
+        ${loc.schedule ? `<div class="meta">🕐 ${loc.schedule}</div>` : ""}
+        ${loc.address ? `<div class="meta">📍 ${loc.address}</div>` : ""}
+        ${loc.teacher_name ? `<div class="meta">👤 ${loc.teacher_name}</div>` : ""}
+        ${loc.description ? `<p style="color:#cfcac6;margin-top:12px;font-size:.9rem;">${loc.description}</p>` : ""}
+      </div>
+    `).join("");
+  }
+  loadLocations();
+</script>
+</body>
+</html>

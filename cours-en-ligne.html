@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cours en ligne — Capoeira em Ação France</title>
+<link rel="icon" href="assets/img/logo-badge.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<section class="hero" style="padding:80px 0 100px;">
+  <div class="wrap">
+    <div class="eyebrow">À distance</div>
+    <h1>Cours <span class="accent">en ligne</span></h1>
+    <p class="lead">Le travail de nos professeurs, en Île-de-France et à Aix-en-Provence, accessible où que vous soyez.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div id="courses-list" class="grid grid-3">
+      <p style="color:var(--grey)">Chargement…</p>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader("cours-en-ligne.html");
+  renderFooter();
+
+  function toEmbedUrl(url) {
+    const yt = url && url.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=)([\w-]+)/);
+    if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+    return url;
+  }
+
+  async function loadCourses() {
+    const el = document.getElementById("courses-list");
+    const { data, error } = await supabaseClient.from("online_courses").select("*").order("created_at", { ascending: false });
+    if (error || !data || data.length === 0) {
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">🎓</div>Aucun cours en ligne publié pour le moment.</div>`;
+      return;
+    }
+    el.innerHTML = data.map(c => `
+      <div class="card" style="padding:0;overflow:hidden;">
+        ${c.video_url ? `<iframe src="${toEmbedUrl(c.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : ""}
+        <div style="padding:22px;">
+          <h3 style="margin:0 0 6px;">${c.title}</h3>
+          ${c.teacher_name ? `<div style="color:var(--red);font-family:var(--font-slant);font-weight:700;text-transform:uppercase;font-size:.85rem;margin-bottom:8px;">${c.teacher_name}</div>` : ""}
+          ${c.description ? `<p>${c.description}</p>` : ""}
+        </div>
+      </div>
+    `).join("");
+  }
+  loadCourses();
+</script>
+</body>
+</html>
