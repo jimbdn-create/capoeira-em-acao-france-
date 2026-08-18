@@ -54,12 +54,16 @@
         window.location.reload();
       });
     } else {
-      bar.innerHTML = `<a href="eleves/login.html" class="btn btn-outline">Espace élève — Se connecter</a>`;
+      bar.innerHTML = `
+        <a href="eleves/login.html" class="btn btn-outline">Espace élève — Se connecter</a>
+        <a href="eleves/inscription.html" class="btn btn-red" style="margin-left:14px;">Je suis élève, m'inscrire</a>
+      `;
     }
   }
 
   async function loadCourses() {
     const el = document.getElementById("courses-list");
+    const { data: sessionData } = await supabaseClient.auth.getSession();
     const { data, error } = await supabaseClient.from("online_courses").select("*").order("created_at", { ascending: false });
     if (error || !data || data.length === 0) {
       el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">🎓</div>Aucun cours en ligne publié pour le moment.</div>`;
@@ -78,6 +82,14 @@
         </div>
       </div>
     `).join("");
+
+    // Enregistre un visionnage pour chaque cours affiché à un élève connecté (statistiques admin)
+    if (sessionData.session) {
+      const userId = sessionData.session.user.id;
+      data.forEach(c => {
+        supabaseClient.from("course_views").insert({ user_id: userId, course_id: c.id }).then(() => {});
+      });
+    }
   }
 
   renderStudentBar();

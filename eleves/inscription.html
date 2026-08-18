@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscription — Cours en ligne — Capoeira em Ação France</title>
+<link rel="icon" href="../assets/img/logo-badge.png">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body style="background:var(--grey-light);">
+
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--white);border:1px solid var(--grey-line);max-width:440px;width:100%;padding:44px 36px;">
+    <div style="text-align:center;margin-bottom:26px;">
+      <img src="../assets/img/logo-badge.png" alt="Logo" style="height:64px;width:64px;margin:0 auto 14px;">
+      <h1 style="font-family:var(--font-display);text-transform:uppercase;font-size:1.3rem;margin:0;">Inscription — Cours en ligne</h1>
+      <p style="color:var(--grey);font-size:.9rem;margin-top:6px;">Réservé aux élèves de Capoeira em Ação France</p>
+    </div>
+
+    <div id="error-msg" style="display:none;background:#fde8e8;color:var(--red-dark);padding:10px 14px;font-size:.88rem;margin-bottom:16px;"></div>
+    <div id="success-box" style="display:none;">
+      <div style="background:#e6f4ea;color:#1e7a34;padding:16px;font-size:.92rem;margin-bottom:16px;">
+        Compte créé avec succès. Si votre e-mail figure bien sur la liste de l'école, vous avez désormais accès aux cours réservés.
+      </div>
+      <a href="../eleves/login.html" class="btn btn-red" style="width:100%;text-align:center;">Se connecter maintenant</a>
+    </div>
+
+    <form id="signup-form">
+      <p style="font-size:.85rem;color:var(--grey);margin-top:-4px;margin-bottom:20px;">
+        Utilisez l'e-mail que vous avez communiqué à l'école — c'est celui-ci qui doit figurer sur la liste des élèves inscrits.
+      </p>
+      <div class="form-field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" required autocomplete="username">
+      </div>
+      <div class="form-field">
+        <label for="full-name">Nom complet</label>
+        <input type="text" id="full-name" autocomplete="name">
+      </div>
+      <div class="form-field">
+        <label for="password">Choisir un mot de passe</label>
+        <input type="password" id="password" required minlength="6" autocomplete="new-password">
+      </div>
+      <button type="submit" class="btn btn-red" style="width:100%;">Créer mon compte</button>
+    </form>
+
+    <div style="text-align:center;margin-top:22px;">
+      <a href="login.html" style="color:var(--grey);font-size:.85rem;">Déjà inscrit(e) ? Se connecter</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/supabase-client.js"></script>
+<script>
+  document.getElementById("signup-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const errEl = document.getElementById("error-msg");
+    errEl.style.display = "none";
+
+    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) {
+      errEl.textContent = "Erreur : " + error.message;
+      errEl.style.display = "block";
+      return;
+    }
+
+    document.getElementById("signup-form").style.display = "none";
+    document.getElementById("success-box").style.display = "block";
+  });
+</script>
+</body>
+</html>

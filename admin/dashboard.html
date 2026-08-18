@@ -49,6 +49,7 @@
     <button class="tab-btn" data-tab="videos">Galerie vidéos</button>
     <button class="tab-btn" data-tab="courses">Cours en ligne</button>
     <button class="tab-btn" data-tab="students">Élèves inscrits</button>
+    <button class="tab-btn" data-tab="stats">Statistiques</button>
     <button class="tab-btn" data-tab="account" style="margin-top:20px;">Mon compte</button>
     <button class="tab-btn" id="logout-btn" style="color:var(--red);">Se déconnecter</button>
     <a href="../index.html" class="tab-btn" style="display:block;">&larr; Voir le site</a>
@@ -194,11 +195,50 @@
             <div class="form-field"><label>Nom (optionnel)</label><input type="text" id="st-name"></div>
             <button type="submit" class="btn btn-red" style="width:100%;">Autoriser</button>
           </form>
+
+          <hr style="margin:28px 0;border:none;border-top:1px solid var(--grey-line);">
+
+          <h3>Importer une liste (Excel/CSV)</h3>
+          <p style="font-size:.85rem;color:var(--grey);margin-top:-8px;">
+            Fichier avec une colonne "email" (et optionnellement "nom"). Ces personnes n'ont pas besoin d'avoir un compte : elles recevront l'accès automatiquement dès qu'elles s'inscriront via le lien ci-dessous.
+          </p>
+          <div class="form-field">
+            <input type="file" id="import-file" accept=".xlsx,.xls,.csv">
+          </div>
+          <button id="import-btn" class="btn btn-outline-dark" style="width:100%;">Importer la liste</button>
+          <div id="import-status" style="margin-top:12px;font-size:.85rem;"></div>
+
+          <div style="margin-top:20px;padding:14px;background:var(--grey-light);font-size:.85rem;">
+            Lien d'inscription à diffuser à tes élèves :<br>
+            <code style="word-break:break-all;">../eleves/inscription.html</code>
+          </div>
         </div>
         <div class="box">
           <h3>Élèves autorisés</h3>
           <table class="admin-table"><thead><tr><th>Email</th><th>Nom</th><th></th></tr></thead>
             <tbody id="students-table"></tbody>
+          </table>
+          <h3 style="margin-top:28px;">En attente d'inscription</h3>
+          <table class="admin-table"><thead><tr><th>Email</th><th>Nom</th><th></th></tr></thead>
+            <tbody id="invites-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATISTIQUES -->
+    <section class="tab-panel" id="panel-stats">
+      <div class="panel-cols" style="grid-template-columns:1fr 1fr;">
+        <div class="box">
+          <h3>Vues par cours</h3>
+          <table class="admin-table"><thead><tr><th>Cours</th><th>Vues totales</th><th>Élèves distincts</th></tr></thead>
+            <tbody id="stats-courses-table"></tbody>
+          </table>
+        </div>
+        <div class="box">
+          <h3>Activité par élève</h3>
+          <table class="admin-table"><thead><tr><th>Élève</th><th>Cours consultés</th><th>Dernière activité</th></tr></thead>
+            <tbody id="stats-students-table"></tbody>
           </table>
         </div>
       </div>
@@ -224,6 +264,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="../assets/js/supabase-client.js"></script>
 <script>
   // --- Protection de la page : vérifie la session et le statut admin ---
@@ -405,6 +446,91 @@
     loadStudents();
   });
 
+  // --- Invitations en attente ---
+  async function loadInvites() {
+    const { data } = await supabaseClient.from("student_invites").select("*").order("created_at", { ascending: false });
+    document.getElementById("invites-table").innerHTML = (data || []).map(inv => `
+      <tr><td>${inv.email}</td><td>${inv.full_name || "—"}</td></tr>
+    `).join("") || `<tr><td colspan="2">Aucune invitation en attente.</td></tr>`;
+  }
+
+  // --- Import Excel / CSV ---
+  document.getElementById("import-btn").addEventListener("click", async () => {
+    const fileInput = document.getElementById("import-file");
+    const statusEl = document.getElementById("import-status");
+    if (!fileInput.files.length) {
+      statusEl.textContent = "Choisis d'abord un fichier.";
+      return;
+    }
+    statusEl.textContent = "Lecture du fichier…";
+
+    const file = fileInput.files[0];
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type: "array" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+    // Cherche une colonne "email" (insensible à la casse) dans chaque ligne
+    const entries = rows.map(row => {
+      const keys = Object.keys(row);
+      const emailKey = keys.find(k => k.toLowerCase().includes("email") || k.toLowerCase().includes("mail"));
+      const nameKey = keys.find(k => k.toLowerCase().includes("nom") || k.toLowerCase().includes("name"));
+      const email = emailKey ? String(row[emailKey]).trim().toLowerCase() : null;
+      const full_name = nameKey ? String(row[nameKey]).trim() : null;
+      return email ? { email, full_name: full_name || null } : null;
+    }).filter(Boolean);
+
+    if (entries.length === 0) {
+      statusEl.textContent = "Aucun email trouvé dans le fichier. Vérifie qu'une colonne s'appelle bien \"email\".";
+      return;
+    }
+
+    const { error } = await supabaseClient.from("student_invites").upsert(entries, { onConflict: "email" });
+    if (error) {
+      statusEl.textContent = "Erreur : " + error.message;
+      return;
+    }
+    statusEl.textContent = `${entries.length} email(s) importé(s) avec succès.`;
+    fileInput.value = "";
+    loadInvites();
+  });
+
+  // --- STATISTIQUES ---
+  async function loadStats() {
+    const { data: views } = await supabaseClient
+      .from("course_views")
+      .select("viewed_at, course_id, user_id, online_courses(title)");
+    const { data: studentsList } = await supabaseClient.from("students").select("user_id, email");
+
+    const emailByUserId = {};
+    (studentsList || []).forEach(s => { emailByUserId[s.user_id] = s.email; });
+
+    const rows = views || [];
+
+    // Par cours
+    const byCourse = {};
+    const byStudent = {};
+    rows.forEach(v => {
+      const courseTitle = v.online_courses?.title || "Cours supprimé";
+      byCourse[courseTitle] = byCourse[courseTitle] || { total: 0, viewers: new Set() };
+      byCourse[courseTitle].total++;
+      byCourse[courseTitle].viewers.add(v.user_id);
+
+      const studentLabel = emailByUserId[v.user_id] || v.user_id;
+      byStudent[studentLabel] = byStudent[studentLabel] || { count: 0, last: v.viewed_at };
+      byStudent[studentLabel].count++;
+      if (new Date(v.viewed_at) > new Date(byStudent[studentLabel].last)) byStudent[studentLabel].last = v.viewed_at;
+    });
+
+    document.getElementById("stats-courses-table").innerHTML = Object.entries(byCourse).map(([title, s]) => `
+      <tr><td>${title}</td><td>${s.total}</td><td>${s.viewers.size}</td></tr>
+    `).join("") || `<tr><td colspan="3">Aucune vue enregistrée pour le moment.</td></tr>`;
+
+    document.getElementById("stats-students-table").innerHTML = Object.entries(byStudent).map(([label, s]) => `
+      <tr><td>${label}</td><td>${s.count}</td><td>${new Date(s.last).toLocaleDateString('fr-FR')}</td></tr>
+    `).join("") || `<tr><td colspan="3">Aucune activité enregistrée pour le moment.</td></tr>`;
+  }
+
   // --- MON COMPTE : changement de mot de passe ---
   document.getElementById("form-password").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -438,6 +564,8 @@
   loadVideos();
   loadCourses();
   loadStudents();
+  loadInvites();
+  loadStats();
 </script>
 </body>
 </html>
