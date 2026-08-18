@@ -21,6 +21,7 @@
       <a href="lieux.html" class="btn btn-red">Trouver un cours</a>
       <a href="capoeira.html" class="btn btn-outline">Découvrir la capoeira</a>
     </div>
+    <img id="hero-image" src="" alt="" style="display:none;width:100%;max-width:720px;margin-top:44px;border:3px solid var(--red);position:relative;z-index:1;">
   </div>
 </section>
 
@@ -31,20 +32,29 @@
       <h2 data-key="home_section1_title">Une seule académie, cinq roda</h2>
     </div>
     <div class="grid grid-3">
-      <div class="card">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <img id="card1-image" src="" alt="" style="display:none;width:100%;aspect-ratio:16/10;object-fit:cover;">
+        <div style="padding:30px;">
         <div class="num">01</div>
         <h3 data-key="home_card1_title">Transmission</h3>
         <p data-key="home_card1_text">Un enseignement fidèle à la tradition de la capoeira, porté par des professeurs formés au sein de l'académie internationale du Mestre Cascavel.</p>
+        </div>
       </div>
-      <div class="card">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <img id="card2-image" src="" alt="" style="display:none;width:100%;aspect-ratio:16/10;object-fit:cover;">
+        <div style="padding:30px;">
         <div class="num">02</div>
         <h3 data-key="home_card2_title">Communauté</h3>
         <p data-key="home_card2_text">Enfants, adultes, débutants ou confirmés : chaque roda est un lieu d'échange, de musique et de progression collective.</p>
+        </div>
       </div>
-      <div class="card">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <img id="card3-image" src="" alt="" style="display:none;width:100%;aspect-ratio:16/10;object-fit:cover;">
+        <div style="padding:30px;">
         <div class="num">03</div>
         <h3 data-key="home_card3_title">Événements</h3>
         <p data-key="home_card3_text">Stages, batizados et rodas ouvertes rythment l'année dans nos différents lieux de pratique.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -90,7 +100,20 @@
   async function loadSiteContent() {
     const { data } = await supabaseClient.from("site_content").select("*");
     if (!data) return;
+    const imageTargets = {
+      home_hero_image: "hero-image",
+      home_card1_image: "card1-image",
+      home_card2_image: "card2-image",
+      home_card3_image: "card3-image",
+    };
     data.forEach(row => {
+      if (imageTargets[row.key]) {
+        if (row.value) {
+          const img = document.getElementById(imageTargets[row.key]);
+          if (img) { img.src = row.value; img.style.display = "block"; }
+        }
+        return;
+      }
       document.querySelectorAll(`[data-key="${row.key}"]`).forEach(el => { el.textContent = row.value; });
     });
   }

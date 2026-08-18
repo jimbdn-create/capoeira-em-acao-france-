@@ -711,6 +711,10 @@
     home_events_title: "Section \"Agenda\" — titre",
     contact_general_email: "Email de contact général (pied de page, toutes les pages)",
     contact_general_phone: "Téléphone de contact général (optionnel)",
+    home_hero_image: "Photo du bandeau principal (page d'accueil)",
+    home_card1_image: "Photo — Carte 1 (Transmission)",
+    home_card2_image: "Photo — Carte 2 (Communauté)",
+    home_card3_image: "Photo — Carte 3 (Événements)",
   };
 
   async function loadContentForm() {
@@ -718,6 +722,15 @@
     const form = document.getElementById("form-content");
     form.innerHTML = (data || []).map(row => {
       const label = contentLabels[row.key] || row.key;
+      const isImage = row.key.endsWith("_image");
+      if (isImage) {
+        return `
+          <div class="form-field">
+            <label>${label}</label>
+            ${row.value ? `<img src="${row.value}" style="max-width:200px;display:block;margin-bottom:10px;border:1px solid var(--grey-line);">` : `<p style="color:var(--grey);font-size:.85rem;margin:0 0 8px;">Aucune photo pour le moment.</p>`}
+            <input type="file" data-content-image-key="${row.key}" data-current-value="${row.value}" accept=".jpg,.jpeg,.png,.gif">
+          </div>`;
+      }
       const long = row.value.length > 60;
       return `
         <div class="form-field">
@@ -732,14 +745,35 @@
   document.getElementById("save-content-btn").addEventListener("click", async () => {
     const statusEl = document.getElementById("content-status");
     statusEl.textContent = "Enregistrement…";
-    const fields = document.querySelectorAll("[data-content-key]");
-    const updates = Array.from(fields).map(f => ({ key: f.dataset.contentKey, value: f.value }));
-    const { error } = await supabaseClient.from("site_content").upsert(updates, { onConflict: "key" });
-    if (error) {
-      statusEl.textContent = "Erreur : " + error.message;
-      return;
+
+    try {
+      // Champs texte
+      const textFields = document.querySelectorAll("[data-content-key]");
+      const textUpdates = Array.from(textFields).map(f => ({ key: f.dataset.contentKey, value: f.value }));
+
+      // Champs image : n'envoie que si un nouveau fichier a été choisi, sinon garde l'ancienne valeur
+      const imageFields = document.querySelectorAll("[data-content-image-key]");
+      const imageUpdates = [];
+      for (const f of imageFields) {
+        const key = f.dataset.contentImageKey;
+        if (f.files && f.files.length) {
+          const url = await uploadFileIfAny(f, "site-content");
+          imageUpdates.push({ key, value: url });
+        } else {
+          imageUpdates.push({ key, value: f.dataset.currentValue || "" });
+        }
+      }
+
+      const { error } = await supabaseClient.from("site_content").upsert([...textUpdates, ...imageUpdates], { onConflict: "key" });
+      if (error) {
+        statusEl.textContent = "Erreur : " + error.message;
+        return;
+      }
+      statusEl.textContent = "Enregistré avec succès. Rafraîchis la page d'accueil pour voir le résultat.";
+      loadContentForm();
+    } catch (err) {
+      statusEl.textContent = "Erreur : " + err.message;
     }
-    statusEl.textContent = "Textes enregistrés avec succès. Rafraîchis la page d'accueil pour voir le résultat.";
   });
 
   // --- CHANSONS ---
