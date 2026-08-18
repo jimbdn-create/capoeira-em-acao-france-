@@ -22,6 +22,7 @@ function renderHeader(active) {
           <span>Capoeira em <em>Ação</em> France</span>
         </a>
         <nav class="main-nav" id="main-nav">${links}</nav>
+        <a href="lieux.html" class="btn btn-red" style="padding:10px 22px;font-size:.9rem;white-space:nowrap;margin-left:14px;">Rejoindre un cours</a>
         <button class="nav-toggle" id="nav-toggle" aria-label="Menu">&#9776;</button>
       </div>
     </header>

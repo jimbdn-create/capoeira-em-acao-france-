@@ -41,7 +41,13 @@
       el.innerHTML = `<div class="empty-state"><div class="icon">📍</div>Les lieux seront affichés ici dès que le contenu sera publié.</div>`;
       return;
     }
-    el.innerHTML = data.map(loc => `
+    el.innerHTML = data.map(loc => {
+      const contacts = [
+        loc.contact_whatsapp ? `<a href="https://wa.me/${loc.contact_whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent('Bonjour, je souhaite rejoindre le cours de capoeira à ' + loc.name)}" target="_blank" rel="noopener" class="btn btn-red" style="padding:10px 20px;font-size:.85rem;">Contacter sur WhatsApp</a>` : "",
+        loc.contact_email ? `<a href="mailto:${loc.contact_email}?subject=${encodeURIComponent('Inscription cours de capoeira - ' + loc.name)}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">Envoyer un e-mail</a>` : "",
+        loc.contact_phone ? `<a href="tel:${loc.contact_phone}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">Appeler</a>` : "",
+      ].filter(Boolean).join(" ");
+      return `
       <div class="location-card" style="padding:0;overflow:hidden;">
         ${loc.image_url ? (
           loc.image_url.toLowerCase().endsWith('.pdf')
@@ -55,9 +61,10 @@
         ${loc.address ? `<div class="meta">📍 ${loc.address}</div>` : ""}
         ${loc.teacher_name ? `<div class="meta">👤 ${loc.teacher_name}</div>` : ""}
         ${loc.description ? `<p style="color:#cfcac6;margin-top:12px;font-size:.9rem;">${loc.description}</p>` : ""}
+        ${contacts ? `<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">${contacts}</div>` : ""}
         </div>
-      </div>
-    `).join("");
+      </div>`;
+    }).join("");
   }
   loadLocations();
 </script>

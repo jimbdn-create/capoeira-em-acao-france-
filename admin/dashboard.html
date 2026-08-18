@@ -75,6 +75,9 @@
             <div class="form-field"><label>Professeur</label><input type="text" id="loc-teacher"></div>
             <div class="form-field"><label>Description</label><textarea id="loc-description"></textarea></div>
             <div class="form-field"><label>Photo du lieu (JPEG, GIF ou PDF)</label><input type="file" id="loc-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <div class="form-field"><label>WhatsApp (numéro avec indicatif, ex: 33612345678)</label><input type="text" id="loc-whatsapp" placeholder="33612345678"></div>
+            <div class="form-field"><label>Email de contact</label><input type="email" id="loc-email"></div>
+            <div class="form-field"><label>Téléphone</label><input type="tel" id="loc-phone"></div>
             <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
           </form>
         </div>
@@ -395,6 +398,9 @@
         teacher_name: document.getElementById("loc-teacher").value,
         description: document.getElementById("loc-description").value,
         image_url: photoUrl,
+        contact_whatsapp: document.getElementById("loc-whatsapp").value || null,
+        contact_email: document.getElementById("loc-email").value || null,
+        contact_phone: document.getElementById("loc-phone").value || null,
       });
       if (error) { alert("Erreur : " + error.message); console.error(error); return; }
       e.target.reset();
