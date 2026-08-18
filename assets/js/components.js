@@ -55,6 +55,11 @@ function renderFooter() {
             <h4>École</h4>
             <a href="videos.html">Vidéos</a>
             <a href="cours-en-ligne.html">Cours en ligne</a>
+            <a href="chansons.html">Chansons</a>
+          </div>
+          <div>
+            <h4>Contact</h4>
+            <div id="footer-contact" style="color:#b8b3af;font-size:.93rem;padding:4px 0;">Chargement…</div>
             <a href="admin/login.html">Espace admin</a>
           </div>
         </div>
@@ -64,4 +69,18 @@ function renderFooter() {
       </div>
     </footer>
   `;
+
+  // Charge l'email/téléphone de contact général depuis le contenu du site (modifiable dans le dashboard admin)
+  if (typeof supabaseClient !== "undefined") {
+    supabaseClient.from("site_content").select("key, value").in("key", ["contact_general_email", "contact_general_phone"]).then(({ data }) => {
+      const el = document.getElementById("footer-contact");
+      if (!el || !data) return;
+      const email = data.find(r => r.key === "contact_general_email")?.value;
+      const phone = data.find(r => r.key === "contact_general_phone")?.value;
+      let html = "";
+      if (email) html += `<a href="mailto:${email}">${email}</a>`;
+      if (phone) html += `<a href="tel:${phone}">${phone}</a>`;
+      el.outerHTML = html || `<span style="color:#b8b3af;font-size:.93rem;">Contact à venir</span>`;
+    });
+  }
 }

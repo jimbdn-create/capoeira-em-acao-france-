@@ -199,7 +199,7 @@ section.alt { background: var(--grey-light); }
 
 /* --- Footer --- */
 footer.site-footer { background: var(--black); color: #cfcac6; padding: 60px 0 30px; }
-footer.site-footer .cols { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
+footer.site-footer .cols { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 32px; }
 footer.site-footer h4 { font-family: var(--font-slant); text-transform: uppercase; color: var(--white); letter-spacing: 1px; margin-bottom: 14px; }
 footer.site-footer a { display: block; color: #b8b3af; padding: 4px 0; font-size: .93rem; }
 footer.site-footer a:hover { color: var(--red); }
