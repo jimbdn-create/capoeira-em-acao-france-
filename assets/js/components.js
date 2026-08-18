@@ -1,6 +1,7 @@
 // Header et footer partagés, injectés dans #site-header / #site-footer
 function renderHeader(active) {
   const items = [
+    ["lieux.html", "Rejoindre un cours"],
     ["index.html", "Accueil"],
     ["capoeira.html", "La Capoeira"],
     ["lieux.html", "Nos lieux"],
