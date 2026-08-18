@@ -334,13 +334,14 @@
 
   document.getElementById("form-location").addEventListener("submit", async (e) => {
     e.preventDefault();
-    await supabaseClient.from("locations").insert({
+    const { error } = await supabaseClient.from("locations").insert({
       name: document.getElementById("loc-name").value,
       address: document.getElementById("loc-address").value,
       schedule: document.getElementById("loc-schedule").value,
       teacher_name: document.getElementById("loc-teacher").value,
       description: document.getElementById("loc-description").value,
     });
+    if (error) { alert("Erreur : " + error.message); console.error(error); return; }
     e.target.reset();
     loadLocations();
   });
@@ -384,7 +385,12 @@
     const startVal = document.getElementById("ev-start").value;
     const endVal = document.getElementById("ev-end").value;
 
-    await supabaseClient.from("events").insert({
+    if (!startVal) {
+      alert("Merci de renseigner une date de début.");
+      return;
+    }
+
+    const { error } = await supabaseClient.from("events").insert({
       title: document.getElementById("ev-title").value,
       event_date: new Date(startVal).toISOString(),
       end_date: endVal ? new Date(endVal).toISOString() : null,
@@ -397,6 +403,13 @@
       instagram_url: document.getElementById("ev-instagram").value || null,
       facebook_url: document.getElementById("ev-facebook").value || null,
     });
+
+    if (error) {
+      alert("Erreur lors de l'enregistrement : " + error.message);
+      console.error(error);
+      return;
+    }
+
     e.target.reset();
     document.getElementById("ev-custom-location-wrap").style.display = "none";
     loadEvents();
@@ -416,11 +429,12 @@
 
   document.getElementById("form-photo").addEventListener("submit", async (e) => {
     e.preventDefault();
-    await supabaseClient.from("gallery_photos").insert({
+    const { error } = await supabaseClient.from("gallery_photos").insert({
       title: document.getElementById("ph-title").value,
       category: document.getElementById("ph-category").value,
       image_url: document.getElementById("ph-url").value,
     });
+    if (error) { alert("Erreur : " + error.message); console.error(error); return; }
     e.target.reset();
     loadPhotos();
   });
@@ -436,11 +450,12 @@
 
   document.getElementById("form-video").addEventListener("submit", async (e) => {
     e.preventDefault();
-    await supabaseClient.from("gallery_videos").insert({
+    const { error } = await supabaseClient.from("gallery_videos").insert({
       title: document.getElementById("vd-title").value,
       video_url: document.getElementById("vd-url").value,
       description: document.getElementById("vd-description").value,
     });
+    if (error) { alert("Erreur : " + error.message); console.error(error); return; }
     e.target.reset();
     loadVideos();
   });
@@ -457,13 +472,14 @@
 
   document.getElementById("form-course").addEventListener("submit", async (e) => {
     e.preventDefault();
-    await supabaseClient.from("online_courses").insert({
+    const { error } = await supabaseClient.from("online_courses").insert({
       title: document.getElementById("cr-title").value,
       teacher_name: document.getElementById("cr-teacher").value,
       access_level: document.getElementById("cr-access").value,
       video_url: document.getElementById("cr-url").value,
       description: document.getElementById("cr-description").value,
     });
+    if (error) { alert("Erreur : " + error.message); console.error(error); return; }
     e.target.reset();
     loadCourses();
   });
