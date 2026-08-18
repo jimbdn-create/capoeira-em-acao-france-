@@ -50,6 +50,7 @@
     <button class="tab-btn" data-tab="courses">Cours en ligne</button>
     <button class="tab-btn" data-tab="students">Élèves inscrits</button>
     <button class="tab-btn" data-tab="stats">Statistiques</button>
+    <button class="tab-btn" data-tab="content" style="margin-top:20px;">Page d'accueil</button>
     <button class="tab-btn" data-tab="account" style="margin-top:20px;">Mon compte</button>
     <button class="tab-btn" id="logout-btn" style="color:var(--red);">Se déconnecter</button>
     <a href="../index.html" class="tab-btn" style="display:block;">&larr; Voir le site</a>
@@ -264,6 +265,19 @@
           <table class="admin-table"><thead><tr><th>Élève</th><th>Cours consultés</th><th>Dernière activité</th></tr></thead>
             <tbody id="stats-students-table"></tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENU PAGE D'ACCUEIL -->
+    <section class="tab-panel" id="panel-content">
+      <div class="panel-cols" style="grid-template-columns:1fr;max-width:700px;">
+        <div class="box">
+          <h3>Textes de la page d'accueil</h3>
+          <p style="font-size:.85rem;color:var(--grey);margin-top:-8px;">Modifie les titres et textes ci-dessous, puis clique "Enregistrer les textes" en bas.</p>
+          <form id="form-content"></form>
+          <button id="save-content-btn" class="btn btn-red" style="width:100%;margin-top:10px;">Enregistrer les textes</button>
+          <div id="content-status" style="margin-top:12px;font-size:.85rem;"></div>
         </div>
       </div>
     </section>
@@ -604,6 +618,56 @@
     `).join("") || `<tr><td colspan="3">Aucune activité enregistrée pour le moment.</td></tr>`;
   }
 
+  // --- CONTENU PAGE D'ACCUEIL ---
+  const contentLabels = {
+    home_hero_eyebrow: "Bandeau au-dessus du grand titre",
+    home_hero_title_line1: "Grand titre — 1ère ligne",
+    home_hero_title_line2: "Grand titre — 2e ligne",
+    home_hero_title_accent: "Grand titre — mot en rouge",
+    home_hero_lead: "Paragraphe d'introduction",
+    home_section1_eyebrow: "Section \"École\" — bandeau",
+    home_section1_title: "Section \"École\" — titre",
+    home_card1_title: "Carte 1 — titre",
+    home_card1_text: "Carte 1 — texte",
+    home_card2_title: "Carte 2 — titre",
+    home_card2_text: "Carte 2 — texte",
+    home_card3_title: "Carte 3 — titre",
+    home_card3_text: "Carte 3 — texte",
+    home_locations_eyebrow: "Section \"Lieux\" — bandeau",
+    home_locations_title: "Section \"Lieux\" — titre",
+    home_events_eyebrow: "Section \"Agenda\" — bandeau",
+    home_events_title: "Section \"Agenda\" — titre",
+  };
+
+  async function loadContentForm() {
+    const { data } = await supabaseClient.from("site_content").select("*");
+    const form = document.getElementById("form-content");
+    form.innerHTML = (data || []).map(row => {
+      const label = contentLabels[row.key] || row.key;
+      const long = row.value.length > 60;
+      return `
+        <div class="form-field">
+          <label>${label}</label>
+          ${long
+            ? `<textarea data-content-key="${row.key}">${row.value}</textarea>`
+            : `<input type="text" data-content-key="${row.key}" value="${row.value.replace(/"/g, '&quot;')}">`}
+        </div>`;
+    }).join("");
+  }
+
+  document.getElementById("save-content-btn").addEventListener("click", async () => {
+    const statusEl = document.getElementById("content-status");
+    statusEl.textContent = "Enregistrement…";
+    const fields = document.querySelectorAll("[data-content-key]");
+    const updates = Array.from(fields).map(f => ({ key: f.dataset.contentKey, value: f.value }));
+    const { error } = await supabaseClient.from("site_content").upsert(updates, { onConflict: "key" });
+    if (error) {
+      statusEl.textContent = "Erreur : " + error.message;
+      return;
+    }
+    statusEl.textContent = "Textes enregistrés avec succès. Rafraîchis la page d'accueil pour voir le résultat.";
+  });
+
   // --- MON COMPTE : changement de mot de passe ---
   document.getElementById("form-password").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -639,6 +703,7 @@
   loadStudents();
   loadInvites();
   loadStats();
+  loadContentForm();
 </script>
 </body>
 </html>

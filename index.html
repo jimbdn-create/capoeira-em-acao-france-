@@ -14,9 +14,9 @@
 
 <section class="hero">
   <div class="wrap">
-    <div class="eyebrow">École affiliée — Mestre Cascavel</div>
-    <h1>La capoeira,<br>art, jeu <span class="accent">et combat</span></h1>
-    <p class="lead">Capoeira em Ação France rassemble cinq lieux de pratique en Île-de-France et à Aix-en-Provence, pour tous les âges et tous les niveaux.</p>
+    <div class="eyebrow" data-key="home_hero_eyebrow">École affiliée — Mestre Cascavel</div>
+    <h1><span data-key="home_hero_title_line1">La capoeira,</span><br><span data-key="home_hero_title_line2">art, jeu</span> <span class="accent" data-key="home_hero_title_accent">et combat</span></h1>
+    <p class="lead" data-key="home_hero_lead">Capoeira em Ação France rassemble cinq lieux de pratique en Île-de-France et à Aix-en-Provence, pour tous les âges et tous les niveaux.</p>
     <div class="cta-row">
       <a href="lieux.html" class="btn btn-red">Trouver un cours</a>
       <a href="capoeira.html" class="btn btn-outline">Découvrir la capoeira</a>
@@ -27,24 +27,24 @@
 <section>
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">L'école</div>
-      <h2>Une seule académie, cinq roda</h2>
+      <div class="eyebrow" data-key="home_section1_eyebrow">L'école</div>
+      <h2 data-key="home_section1_title">Une seule académie, cinq roda</h2>
     </div>
     <div class="grid grid-3">
       <div class="card">
         <div class="num">01</div>
-        <h3>Transmission</h3>
-        <p>Un enseignement fidèle à la tradition de la capoeira, porté par des professeurs formés au sein de l'académie internationale du Mestre Cascavel.</p>
+        <h3 data-key="home_card1_title">Transmission</h3>
+        <p data-key="home_card1_text">Un enseignement fidèle à la tradition de la capoeira, porté par des professeurs formés au sein de l'académie internationale du Mestre Cascavel.</p>
       </div>
       <div class="card">
         <div class="num">02</div>
-        <h3>Communauté</h3>
-        <p>Enfants, adultes, débutants ou confirmés : chaque roda est un lieu d'échange, de musique et de progression collective.</p>
+        <h3 data-key="home_card2_title">Communauté</h3>
+        <p data-key="home_card2_text">Enfants, adultes, débutants ou confirmés : chaque roda est un lieu d'échange, de musique et de progression collective.</p>
       </div>
       <div class="card">
         <div class="num">03</div>
-        <h3>Événements</h3>
-        <p>Stages, batizados et rodas ouvertes rythment l'année dans nos différents lieux de pratique.</p>
+        <h3 data-key="home_card3_title">Événements</h3>
+        <p data-key="home_card3_text">Stages, batizados et rodas ouvertes rythment l'année dans nos différents lieux de pratique.</p>
       </div>
     </div>
   </div>
@@ -53,8 +53,8 @@
 <section class="alt">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Nos lieux</div>
-      <h2>Cinq sites, une même énergie</h2>
+      <div class="eyebrow" data-key="home_locations_eyebrow">Nos lieux</div>
+      <h2 data-key="home_locations_title">Cinq sites, une même énergie</h2>
     </div>
     <div id="locations-preview" class="grid grid-3">
       <p style="color:var(--grey)">Chargement des lieux…</p>
@@ -68,8 +68,8 @@
 <section>
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Agenda</div>
-      <h2>Prochains événements</h2>
+      <div class="eyebrow" data-key="home_events_eyebrow">Agenda</div>
+      <h2 data-key="home_events_title">Prochains événements</h2>
     </div>
     <div id="events-preview"><p style="color:var(--grey)">Chargement des événements…</p></div>
     <div style="margin-top:24px;">
@@ -86,6 +86,15 @@
 <script>
   renderHeader("index.html");
   renderFooter();
+
+  async function loadSiteContent() {
+    const { data } = await supabaseClient.from("site_content").select("*");
+    if (!data) return;
+    data.forEach(row => {
+      document.querySelectorAll(`[data-key="${row.key}"]`).forEach(el => { el.textContent = row.value; });
+    });
+  }
+  loadSiteContent();
 
   async function loadLocationsPreview() {
     const el = document.getElementById("locations-preview");
