@@ -7,6 +7,7 @@ function renderHeader(active) {
     ["evenements.html", "Événements"],
     ["galerie.html", "Galerie"],
     ["videos.html", "Vidéos"],
+    ["chansons.html", "Chansons"],
     ["cours-en-ligne.html", "Cours en ligne"],
   ];
   const links = items.map(([href, label]) =>

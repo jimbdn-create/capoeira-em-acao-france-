@@ -48,6 +48,7 @@
     <button class="tab-btn" data-tab="photos">Galerie photos</button>
     <button class="tab-btn" data-tab="videos">Galerie vidéos</button>
     <button class="tab-btn" data-tab="courses">Cours en ligne</button>
+    <button class="tab-btn" data-tab="songs">Chansons</button>
     <button class="tab-btn" data-tab="students">Élèves inscrits</button>
     <button class="tab-btn" data-tab="stats">Statistiques</button>
     <button class="tab-btn" data-tab="content" style="margin-top:20px;">Page d'accueil</button>
@@ -203,6 +204,28 @@
           <h3>Cours publiés</h3>
           <table class="admin-table"><thead><tr><th>Titre</th><th>Professeur</th><th>Accès</th><th></th></tr></thead>
             <tbody id="courses-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHANSONS -->
+    <section class="tab-panel" id="panel-songs">
+      <div class="panel-cols">
+        <div class="box">
+          <h3>Ajouter une chanson</h3>
+          <form id="form-song">
+            <div class="form-field"><label>Titre</label><input type="text" id="sg-title" required></div>
+            <div class="form-field"><label>Paroles (original)</label><textarea id="sg-lyrics" style="min-height:160px;"></textarea></div>
+            <div class="form-field"><label>Traduction en français</label><textarea id="sg-translation" style="min-height:160px;"></textarea></div>
+            <div class="form-field"><label>Lien YouTube ou Instagram (comment la chanter)</label><input type="url" id="sg-media" placeholder="https://..."></div>
+            <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
+          </form>
+        </div>
+        <div class="box">
+          <h3>Chansons publiées</h3>
+          <table class="admin-table"><thead><tr><th>Titre</th><th></th></tr></thead>
+            <tbody id="songs-table"></tbody>
           </table>
         </div>
       </div>
@@ -711,6 +734,28 @@
     statusEl.textContent = "Textes enregistrés avec succès. Rafraîchis la page d'accueil pour voir le résultat.";
   });
 
+  // --- CHANSONS ---
+  async function loadSongs() {
+    const { data } = await supabaseClient.from("songs").select("*").order("title");
+    document.getElementById("songs-table").innerHTML = (data || []).map(s => `
+      <tr><td>${s.title}</td>
+      <td class="row-actions"><button onclick="deleteRow('songs','${s.id}', loadSongs)">Supprimer</button></td></tr>
+    `).join("") || `<tr><td colspan="2">Aucune chanson.</td></tr>`;
+  }
+
+  document.getElementById("form-song").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const { error } = await supabaseClient.from("songs").insert({
+      title: document.getElementById("sg-title").value,
+      lyrics_original: document.getElementById("sg-lyrics").value,
+      lyrics_translation: document.getElementById("sg-translation").value,
+      media_url: document.getElementById("sg-media").value || null,
+    });
+    if (error) { alert("Erreur : " + error.message); console.error(error); return; }
+    e.target.reset();
+    loadSongs();
+  });
+
   // --- MON COMPTE : changement de mot de passe ---
   document.getElementById("form-password").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -743,6 +788,7 @@
   loadPhotos();
   loadVideos();
   loadCourses();
+  loadSongs();
   loadStudents();
   loadInvites();
   loadStats();
