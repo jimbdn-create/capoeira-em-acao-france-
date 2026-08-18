@@ -123,7 +123,7 @@
             <span class="m">${d.toLocaleDateString('fr-FR', { month: 'short' })}</span>
           </div>
           <div class="event-body">
-            <h3>${ev.title}<span class="badge-type">${ev.event_type}</span></h3>
+            <h3>${ev.title}<span class="badge-type">${({cours:"Cours",stage:"Stage",batizado:"Batizado",rencontre_internationale:"Rencontre internationale"})[ev.event_type] || ev.event_type}</span></h3>
             ${ev.locations ? `<div class="loc">${ev.locations.name}</div>` : ""}
             ${ev.description ? `<p>${ev.description}</p>` : ""}
           </div>

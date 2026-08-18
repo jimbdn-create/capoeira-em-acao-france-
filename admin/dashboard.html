@@ -91,12 +91,36 @@
           <h3>Ajouter un événement</h3>
           <form id="form-event">
             <div class="form-field"><label>Titre</label><input type="text" id="ev-title" required></div>
-            <div class="form-field"><label>Date et heure</label><input type="datetime-local" id="ev-date" required></div>
+
             <div class="form-field"><label>Type</label>
-              <select id="ev-type"><option value="cours">Cours</option><option value="stage">Stage</option></select>
+              <select id="ev-type">
+                <option value="cours">Cours</option>
+                <option value="stage">Stage</option>
+                <option value="batizado">Batizado</option>
+                <option value="rencontre_internationale">Rencontre internationale</option>
+              </select>
             </div>
-            <div class="form-field"><label>Lieu</label><select id="ev-location"></select></div>
+
+            <div class="form-field"><label>Du (date et heure de début)</label><input type="datetime-local" id="ev-start" required></div>
+            <div class="form-field"><label>Au (date et heure de fin — optionnel si événement d'un seul jour)</label><input type="datetime-local" id="ev-end"></div>
+
+            <div class="form-field"><label>Lieu</label>
+              <select id="ev-location">
+                <option value="">— Choisir un lieu habituel —</option>
+                <option value="__autre__">Autre (préciser)</option>
+              </select>
+            </div>
+            <div class="form-field" id="ev-custom-location-wrap" style="display:none;">
+              <label>Préciser le lieu (ville, pays, région...)</label>
+              <input type="text" id="ev-custom-location" placeholder="ex: São Paulo, Brésil / Rencontre Europe / Bruxelles">
+            </div>
+
             <div class="form-field"><label>Description</label><textarea id="ev-description"></textarea></div>
+            <div class="form-field"><label>Photo (URL)</label><input type="url" id="ev-image" placeholder="https://..."></div>
+            <div class="form-field"><label>Vidéo (URL YouTube)</label><input type="url" id="ev-video" placeholder="https://youtube.com/..."></div>
+            <div class="form-field"><label>Lien Instagram</label><input type="url" id="ev-instagram" placeholder="https://instagram.com/..."></div>
+            <div class="form-field"><label>Lien Facebook</label><input type="url" id="ev-facebook" placeholder="https://facebook.com/..."></div>
+
             <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
           </form>
         </div>
@@ -303,7 +327,9 @@
       <tr><td>${l.name}</td><td>${l.schedule || "—"}</td>
       <td class="row-actions"><button onclick="deleteRow('locations','${l.id}', loadLocations)">Supprimer</button></td></tr>
     `).join("") || `<tr><td colspan="3">Aucun lieu.</td></tr>`;
-    select.innerHTML = (data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join("");
+    select.innerHTML = `<option value="">— Choisir un lieu habituel —</option>` +
+      (data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join("") +
+      `<option value="__autre__">Autre (préciser)</option>`;
   }
 
   document.getElementById("form-location").addEventListener("submit", async (e) => {
@@ -320,28 +346,59 @@
   });
 
   // --- EVENEMENTS ---
+  function eventTypeLabel(type) {
+    return { cours: "Cours", stage: "Stage", batizado: "Batizado", rencontre_internationale: "Rencontre internationale" }[type] || type;
+  }
+  function eventTypePillClass(type) {
+    if (type === "stage") return "pill-stage";
+    if (type === "batizado" || type === "rencontre_internationale") return "pill-stage";
+    return "pill-cours";
+  }
+
   async function loadEvents() {
     const { data } = await supabaseClient.from("events").select("*, locations(name)").order("event_date");
-    document.getElementById("events-table").innerHTML = (data || []).map(ev => `
+    document.getElementById("events-table").innerHTML = (data || []).map(ev => {
+      const lieu = ev.locations ? ev.locations.name : (ev.location_other || "—");
+      const dateRange = ev.end_date
+        ? `${new Date(ev.event_date).toLocaleDateString('fr-FR')} → ${new Date(ev.end_date).toLocaleDateString('fr-FR')}`
+        : new Date(ev.event_date).toLocaleString('fr-FR', { dateStyle:'short', timeStyle:'short' });
+      return `
       <tr>
-        <td>${new Date(ev.event_date).toLocaleString('fr-FR', { dateStyle:'short', timeStyle:'short' })}</td>
-        <td>${ev.title}</td>
-        <td><span class="pill ${ev.event_type === 'stage' ? 'pill-stage' : 'pill-cours'}">${ev.event_type}</span></td>
+        <td>${dateRange}</td>
+        <td>${ev.title}<br><span style="color:var(--grey);font-size:.8rem;">${lieu}</span></td>
+        <td><span class="pill ${eventTypePillClass(ev.event_type)}">${eventTypeLabel(ev.event_type)}</span></td>
         <td class="row-actions"><button onclick="deleteRow('events','${ev.id}', loadEvents)">Supprimer</button></td>
-      </tr>
-    `).join("") || `<tr><td colspan="4">Aucun événement.</td></tr>`;
+      </tr>`;
+    }).join("") || `<tr><td colspan="4">Aucun événement.</td></tr>`;
   }
+
+  // Affiche/masque le champ "préciser le lieu" selon la sélection
+  document.getElementById("ev-location").addEventListener("change", (e) => {
+    document.getElementById("ev-custom-location-wrap").style.display = e.target.value === "__autre__" ? "block" : "none";
+  });
 
   document.getElementById("form-event").addEventListener("submit", async (e) => {
     e.preventDefault();
+    const locationVal = document.getElementById("ev-location").value;
+    const isCustom = locationVal === "__autre__";
+    const startVal = document.getElementById("ev-start").value;
+    const endVal = document.getElementById("ev-end").value;
+
     await supabaseClient.from("events").insert({
       title: document.getElementById("ev-title").value,
-      event_date: new Date(document.getElementById("ev-date").value).toISOString(),
+      event_date: new Date(startVal).toISOString(),
+      end_date: endVal ? new Date(endVal).toISOString() : null,
       event_type: document.getElementById("ev-type").value,
-      location_id: document.getElementById("ev-location").value || null,
+      location_id: (!isCustom && locationVal) ? locationVal : null,
+      location_other: isCustom ? document.getElementById("ev-custom-location").value : null,
       description: document.getElementById("ev-description").value,
+      image_url: document.getElementById("ev-image").value || null,
+      video_url: document.getElementById("ev-video").value || null,
+      instagram_url: document.getElementById("ev-instagram").value || null,
+      facebook_url: document.getElementById("ev-facebook").value || null,
     });
     e.target.reset();
+    document.getElementById("ev-custom-location-wrap").style.display = "none";
     loadEvents();
   });
 

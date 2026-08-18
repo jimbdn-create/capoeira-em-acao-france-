@@ -14,13 +14,15 @@
   <div class="wrap">
     <div class="eyebrow">Agenda</div>
     <h1>Événements <span class="accent">&amp; stages</span></h1>
-    <p class="lead">Cours réguliers, stages exceptionnels et rodas ouvertes dans nos différents lieux.</p>
+    <p class="lead">Cours réguliers, stages, batizados et rencontres internationales.</p>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div id="events-list"><p style="color:var(--grey)">Chargement…</p></div>
+    <div id="events-list" class="grid grid-2">
+      <p style="color:var(--grey)">Chargement…</p>
+    </div>
   </div>
 </section>
 
@@ -32,27 +34,48 @@
   renderHeader("evenements.html");
   renderFooter();
 
+  function eventTypeLabel(type) {
+    return { cours: "Cours", stage: "Stage", batizado: "Batizado", rencontre_internationale: "Rencontre internationale" }[type] || type;
+  }
+
+  function toEmbedUrl(url) {
+    const yt = url && url.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=)([\w-]+)/);
+    if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+    return url;
+  }
+
   async function loadEvents() {
     const el = document.getElementById("events-list");
     const { data, error } = await supabaseClient
       .from("events").select("*, locations(name)")
       .order("event_date", { ascending: true });
     if (error || !data || data.length === 0) {
-      el.innerHTML = `<div class="empty-state"><div class="icon">📅</div>Aucun événement publié pour le moment. Revenez bientôt !</div>`;
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">📅</div>Aucun événement publié pour le moment. Revenez bientôt !</div>`;
       return;
     }
     el.innerHTML = data.map(ev => {
       const d = new Date(ev.event_date);
+      const lieu = ev.locations ? ev.locations.name : (ev.location_other || "");
+      const dateLabel = ev.end_date
+        ? `${d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' })} → ${new Date(ev.end_date).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' })}`
+        : d.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+
+      const links = [
+        ev.instagram_url ? `<a href="${ev.instagram_url}" target="_blank" rel="noopener" class="btn btn-outline-dark" style="padding:6px 14px;font-size:.8rem;">Instagram</a>` : "",
+        ev.facebook_url ? `<a href="${ev.facebook_url}" target="_blank" rel="noopener" class="btn btn-outline-dark" style="padding:6px 14px;font-size:.8rem;">Facebook</a>` : "",
+      ].join(" ");
+
       return `
-        <div class="event-row">
-          <div class="event-date">
-            <span class="d">${d.getDate()}</span>
-            <span class="m">${d.toLocaleDateString('fr-FR', { month: 'short' })}</span>
-          </div>
-          <div class="event-body">
-            <h3>${ev.title}<span class="badge-type">${ev.event_type}</span></h3>
-            ${ev.locations ? `<div class="loc">${ev.locations.name}</div>` : ""}
-            ${ev.description ? `<p>${ev.description}</p>` : ""}
+        <div class="card" style="padding:0;overflow:hidden;">
+          ${ev.image_url ? `<img src="${ev.image_url}" alt="${ev.title}" style="width:100%;aspect-ratio:16/9;object-fit:cover;">` : ""}
+          ${ev.video_url ? `<iframe src="${toEmbedUrl(ev.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : ""}
+          <div style="padding:24px;">
+            <span class="badge-type" style="margin-left:0;">${eventTypeLabel(ev.event_type)}</span>
+            <h3 style="font-family:var(--font-slant);font-weight:700;text-transform:uppercase;font-size:1.3rem;margin:10px 0 6px;">${ev.title}</h3>
+            <div style="color:var(--red);font-weight:600;font-size:.9rem;">${dateLabel}</div>
+            ${lieu ? `<div style="color:var(--grey);font-size:.9rem;margin-top:2px;">📍 ${lieu}</div>` : ""}
+            ${ev.description ? `<p style="margin-top:10px;">${ev.description}</p>` : ""}
+            ${links ? `<div style="margin-top:14px;">${links}</div>` : ""}
           </div>
         </div>`;
     }).join("");
