@@ -48,6 +48,7 @@
     <button class="tab-btn" data-tab="photos">Galerie photos</button>
     <button class="tab-btn" data-tab="videos">Galerie vidéos</button>
     <button class="tab-btn" data-tab="courses">Cours en ligne</button>
+    <button class="tab-btn" data-tab="students">Élèves inscrits</button>
     <button class="tab-btn" data-tab="account" style="margin-top:20px;">Mon compte</button>
     <button class="tab-btn" id="logout-btn" style="color:var(--red);">Se déconnecter</button>
     <a href="../index.html" class="tab-btn" style="display:block;">&larr; Voir le site</a>
@@ -159,6 +160,12 @@
           <form id="form-course">
             <div class="form-field"><label>Titre</label><input type="text" id="cr-title" required></div>
             <div class="form-field"><label>Professeur</label><input type="text" id="cr-teacher"></div>
+            <div class="form-field"><label>Accès</label>
+              <select id="cr-access">
+                <option value="public">Public (visible par tous)</option>
+                <option value="eleves">Réservé aux élèves inscrits</option>
+              </select>
+            </div>
             <div class="form-field"><label>URL vidéo (YouTube)</label><input type="url" id="cr-url"></div>
             <div class="form-field"><label>Description</label><textarea id="cr-description"></textarea></div>
             <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
@@ -166,8 +173,32 @@
         </div>
         <div class="box">
           <h3>Cours publiés</h3>
-          <table class="admin-table"><thead><tr><th>Titre</th><th>Professeur</th><th></th></tr></thead>
+          <table class="admin-table"><thead><tr><th>Titre</th><th>Professeur</th><th>Accès</th><th></th></tr></thead>
             <tbody id="courses-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ELEVES -->
+    <section class="tab-panel" id="panel-students">
+      <div class="panel-cols">
+        <div class="box">
+          <h3>Autoriser un élève</h3>
+          <p style="font-size:.85rem;color:var(--grey);margin-top:-8px;">
+            1. Crée d'abord son compte dans Supabase (Authentication → Add user → Create new user) avec un mot de passe temporaire.<br><br>
+            2. Colle son email ci-dessous pour l'autoriser à voir les cours réservés.
+          </p>
+          <form id="form-student">
+            <div class="form-field"><label>Email de l'élève (compte déjà créé)</label><input type="email" id="st-email" required></div>
+            <div class="form-field"><label>Nom (optionnel)</label><input type="text" id="st-name"></div>
+            <button type="submit" class="btn btn-red" style="width:100%;">Autoriser</button>
+          </form>
+        </div>
+        <div class="box">
+          <h3>Élèves autorisés</h3>
+          <table class="admin-table"><thead><tr><th>Email</th><th>Nom</th><th></th></tr></thead>
+            <tbody id="students-table"></tbody>
           </table>
         </div>
       </div>
@@ -321,8 +352,9 @@
     const { data } = await supabaseClient.from("online_courses").select("*").order("created_at", { ascending:false });
     document.getElementById("courses-table").innerHTML = (data || []).map(c => `
       <tr><td>${c.title}</td><td>${c.teacher_name || "—"}</td>
+      <td><span class="pill ${c.access_level === 'eleves' ? 'pill-stage' : 'pill-cours'}">${c.access_level === 'eleves' ? 'Élèves' : 'Public'}</span></td>
       <td class="row-actions"><button onclick="deleteRow('online_courses','${c.id}', loadCourses)">Supprimer</button></td></tr>
-    `).join("") || `<tr><td colspan="3">Aucun cours.</td></tr>`;
+    `).join("") || `<tr><td colspan="4">Aucun cours.</td></tr>`;
   }
 
   document.getElementById("form-course").addEventListener("submit", async (e) => {
@@ -330,6 +362,7 @@
     await supabaseClient.from("online_courses").insert({
       title: document.getElementById("cr-title").value,
       teacher_name: document.getElementById("cr-teacher").value,
+      access_level: document.getElementById("cr-access").value,
       video_url: document.getElementById("cr-url").value,
       description: document.getElementById("cr-description").value,
     });
@@ -343,6 +376,34 @@
     await supabaseClient.from(table).delete().eq("id", id);
     reload();
   }
+
+  // --- ELEVES ---
+  async function loadStudents() {
+    const { data, error } = await supabaseClient.from("students").select("*").order("created_at", { ascending: false });
+    document.getElementById("students-table").innerHTML = (data || []).map(s => `
+      <tr><td>${s.email || "—"}</td><td>${s.full_name || "—"}</td>
+      <td class="row-actions"><button onclick="removeStudent('${s.user_id}')">Retirer</button></td></tr>
+    `).join("") || `<tr><td colspan="3">Aucun élève autorisé pour le moment.</td></tr>`;
+  }
+
+  async function removeStudent(userId) {
+    if (!confirm("Retirer l'accès de cet élève ?")) return;
+    await supabaseClient.from("students").delete().eq("user_id", userId);
+    loadStudents();
+  }
+
+  document.getElementById("form-student").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("st-email").value;
+    const name = document.getElementById("st-name").value;
+    const { error } = await supabaseClient.rpc("admin_add_student", { p_email: email, p_full_name: name || null });
+    if (error) {
+      alert("Erreur : " + error.message);
+      return;
+    }
+    e.target.reset();
+    loadStudents();
+  });
 
   // --- MON COMPTE : changement de mot de passe ---
   document.getElementById("form-password").addEventListener("submit", async (e) => {
@@ -376,6 +437,7 @@
   loadPhotos();
   loadVideos();
   loadCourses();
+  loadStudents();
 </script>
 </body>
 </html>

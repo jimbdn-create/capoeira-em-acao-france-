@@ -15,6 +15,7 @@
     <div class="eyebrow">À distance</div>
     <h1>Cours <span class="accent">en ligne</span></h1>
     <p class="lead">Le travail de nos professeurs, en Île-de-France et à Aix-en-Provence, accessible où que vous soyez.</p>
+    <div id="student-bar" style="margin-top:24px;"></div>
   </div>
 </section>
 
@@ -40,6 +41,23 @@
     return url;
   }
 
+  async function renderStudentBar() {
+    const { data } = await supabaseClient.auth.getSession();
+    const bar = document.getElementById("student-bar");
+    if (data.session) {
+      bar.innerHTML = `
+        <span style="color:#d8d5d2;font-size:.9rem;">Connecté(e) en tant qu'élève : ${data.session.user.email}</span>
+        <button id="logout-student" class="btn btn-outline" style="margin-left:14px;padding:8px 18px;font-size:.85rem;">Se déconnecter</button>
+      `;
+      document.getElementById("logout-student").addEventListener("click", async () => {
+        await supabaseClient.auth.signOut();
+        window.location.reload();
+      });
+    } else {
+      bar.innerHTML = `<a href="eleves/login.html" class="btn btn-outline">Espace élève — Se connecter</a>`;
+    }
+  }
+
   async function loadCourses() {
     const el = document.getElementById("courses-list");
     const { data, error } = await supabaseClient.from("online_courses").select("*").order("created_at", { ascending: false });
@@ -51,6 +69,9 @@
       <div class="card" style="padding:0;overflow:hidden;">
         ${c.video_url ? `<iframe src="${toEmbedUrl(c.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : ""}
         <div style="padding:22px;">
+          <div style="margin-bottom:8px;">
+            <span class="pill ${c.access_level === 'eleves' ? 'pill-stage' : 'pill-cours'}">${c.access_level === 'eleves' ? 'Réservé aux élèves' : 'Public'}</span>
+          </div>
           <h3 style="margin:0 0 6px;">${c.title}</h3>
           ${c.teacher_name ? `<div style="color:var(--red);font-family:var(--font-slant);font-weight:700;text-transform:uppercase;font-size:.85rem;margin-bottom:8px;">${c.teacher_name}</div>` : ""}
           ${c.description ? `<p>${c.description}</p>` : ""}
@@ -58,6 +79,8 @@
       </div>
     `).join("");
   }
+
+  renderStudentBar();
   loadCourses();
 </script>
 </body>
