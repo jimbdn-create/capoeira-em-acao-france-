@@ -42,13 +42,20 @@
       return;
     }
     el.innerHTML = data.map(loc => `
-      <div class="location-card">
+      <div class="location-card" style="padding:0;overflow:hidden;">
+        ${loc.image_url ? (
+          loc.image_url.toLowerCase().endsWith('.pdf')
+            ? `<a href="${loc.image_url}" target="_blank" rel="noopener" style="display:block;padding:14px 20px;background:#221f1e;color:var(--red);font-family:var(--font-slant);text-transform:uppercase;font-size:.85rem;">📄 Voir le document</a>`
+            : `<img src="${loc.image_url}" alt="${loc.name}" style="width:100%;aspect-ratio:16/10;object-fit:cover;">`
+        ) : ""}
+        <div style="padding:32px;">
         <div class="tag">Lieu de cours</div>
         <h3>${loc.name}</h3>
         ${loc.schedule ? `<div class="meta">🕐 ${loc.schedule}</div>` : ""}
         ${loc.address ? `<div class="meta">📍 ${loc.address}</div>` : ""}
         ${loc.teacher_name ? `<div class="meta">👤 ${loc.teacher_name}</div>` : ""}
         ${loc.description ? `<p style="color:#cfcac6;margin-top:12px;font-size:.9rem;">${loc.description}</p>` : ""}
+        </div>
       </div>
     `).join("");
   }

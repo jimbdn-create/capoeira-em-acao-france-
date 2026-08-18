@@ -43,7 +43,9 @@
     }
     el.innerHTML = data.map(p => `
       <div class="gallery-item">
-        <img src="${p.image_url}" alt="${p.title || ''}" loading="lazy">
+        ${p.image_url.toLowerCase().endsWith('.pdf')
+          ? `<a href="${p.image_url}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;height:100%;background:var(--black);color:var(--white);font-family:var(--font-slant);text-transform:uppercase;">📄 Voir le PDF</a>`
+          : `<img src="${p.image_url}" alt="${p.title || ''}" loading="lazy">`}
         ${p.title ? `<div class="cap">${p.title}${p.category ? ` — ${p.category}` : ""}</div>` : ""}
       </div>
     `).join("");

@@ -73,6 +73,7 @@
             <div class="form-field"><label>Horaires</label><input type="text" id="loc-schedule" placeholder="ex: Dimanche 14h-17h"></div>
             <div class="form-field"><label>Professeur</label><input type="text" id="loc-teacher"></div>
             <div class="form-field"><label>Description</label><textarea id="loc-description"></textarea></div>
+            <div class="form-field"><label>Photo du lieu (JPEG, GIF ou PDF)</label><input type="file" id="loc-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
           </form>
         </div>
@@ -117,7 +118,7 @@
             </div>
 
             <div class="form-field"><label>Description</label><textarea id="ev-description"></textarea></div>
-            <div class="form-field"><label>Photo (URL)</label><input type="url" id="ev-image" placeholder="https://..."></div>
+            <div class="form-field"><label>Photo (JPEG, GIF ou PDF)</label><input type="file" id="ev-image" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label>Vidéo (URL YouTube)</label><input type="url" id="ev-video" placeholder="https://youtube.com/..."></div>
             <div class="form-field"><label>Lien Instagram</label><input type="url" id="ev-instagram" placeholder="https://instagram.com/..."></div>
             <div class="form-field"><label>Lien Facebook</label><input type="url" id="ev-facebook" placeholder="https://facebook.com/..."></div>
@@ -139,11 +140,11 @@
       <div class="panel-cols">
         <div class="box">
           <h3>Ajouter une photo</h3>
-          <p style="font-size:.85rem;color:var(--grey);margin-top:-8px;">Colle l'URL d'une image déjà hébergée (Supabase Storage, ou tout lien direct .jpg/.png).</p>
+          <p style="font-size:.85rem;color:var(--grey);margin-top:-8px;">Envoie directement un fichier depuis ton ordinateur ou ton téléphone.</p>
           <form id="form-photo">
             <div class="form-field"><label>Titre</label><input type="text" id="ph-title"></div>
             <div class="form-field"><label>Catégorie / lieu</label><input type="text" id="ph-category"></div>
-            <div class="form-field"><label>URL de l'image</label><input type="url" id="ph-url" required placeholder="https://..."></div>
+            <div class="form-field"><label>Fichier (JPEG, GIF ou PDF)</label><input type="file" id="ph-file" accept=".jpg,.jpeg,.png,.gif,.pdf" required></div>
             <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
           </form>
         </div>
@@ -193,6 +194,7 @@
               </select>
             </div>
             <div class="form-field"><label>URL vidéo (YouTube)</label><input type="url" id="cr-url"></div>
+            <div class="form-field"><label>Image miniature (JPEG, GIF ou PDF)</label><input type="file" id="cr-thumb" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label>Description</label><textarea id="cr-description"></textarea></div>
             <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
           </form>
@@ -316,6 +318,19 @@
   }
   guard();
 
+  // --- Envoi de fichier (photo JPEG/GIF ou PDF) vers le stockage Supabase ---
+  // Retourne l'URL publique du fichier, ou null si aucun fichier sélectionné.
+  async function uploadFileIfAny(inputEl, folder) {
+    if (!inputEl.files || !inputEl.files.length) return null;
+    const file = inputEl.files[0];
+    const ext = file.name.split(".").pop();
+    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabaseClient.storage.from("media").upload(path, file);
+    if (error) throw new Error("Échec de l'envoi du fichier : " + error.message);
+    const { data } = supabaseClient.storage.from("media").getPublicUrl(path);
+    return data.publicUrl;
+  }
+
   document.getElementById("logout-btn").addEventListener("click", async () => {
     await supabaseClient.auth.signOut();
     window.location.href = "login.html";
@@ -348,16 +363,22 @@
 
   document.getElementById("form-location").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const { error } = await supabaseClient.from("locations").insert({
-      name: document.getElementById("loc-name").value,
-      address: document.getElementById("loc-address").value,
-      schedule: document.getElementById("loc-schedule").value,
-      teacher_name: document.getElementById("loc-teacher").value,
-      description: document.getElementById("loc-description").value,
-    });
-    if (error) { alert("Erreur : " + error.message); console.error(error); return; }
-    e.target.reset();
-    loadLocations();
+    try {
+      const photoUrl = await uploadFileIfAny(document.getElementById("loc-photo"), "locations");
+      const { error } = await supabaseClient.from("locations").insert({
+        name: document.getElementById("loc-name").value,
+        address: document.getElementById("loc-address").value,
+        schedule: document.getElementById("loc-schedule").value,
+        teacher_name: document.getElementById("loc-teacher").value,
+        description: document.getElementById("loc-description").value,
+        image_url: photoUrl,
+      });
+      if (error) { alert("Erreur : " + error.message); console.error(error); return; }
+      e.target.reset();
+      loadLocations();
+    } catch (err) {
+      alert(err.message);
+    }
   });
 
   // --- EVENEMENTS ---
@@ -404,6 +425,14 @@
       return;
     }
 
+    let imageUrl = null;
+    try {
+      imageUrl = await uploadFileIfAny(document.getElementById("ev-image"), "events");
+    } catch (err) {
+      alert(err.message);
+      return;
+    }
+
     const { error } = await supabaseClient.from("events").insert({
       title: document.getElementById("ev-title").value,
       event_date: new Date(startVal).toISOString(),
@@ -412,7 +441,7 @@
       location_id: (!isCustom && locationVal) ? locationVal : null,
       location_other: isCustom ? document.getElementById("ev-custom-location").value : null,
       description: document.getElementById("ev-description").value,
-      image_url: document.getElementById("ev-image").value || null,
+      image_url: imageUrl,
       video_url: document.getElementById("ev-video").value || null,
       instagram_url: document.getElementById("ev-instagram").value || null,
       facebook_url: document.getElementById("ev-facebook").value || null,
@@ -443,14 +472,20 @@
 
   document.getElementById("form-photo").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const { error } = await supabaseClient.from("gallery_photos").insert({
-      title: document.getElementById("ph-title").value,
-      category: document.getElementById("ph-category").value,
-      image_url: document.getElementById("ph-url").value,
-    });
-    if (error) { alert("Erreur : " + error.message); console.error(error); return; }
-    e.target.reset();
-    loadPhotos();
+    try {
+      const fileUrl = await uploadFileIfAny(document.getElementById("ph-file"), "gallery");
+      if (!fileUrl) { alert("Merci de choisir un fichier."); return; }
+      const { error } = await supabaseClient.from("gallery_photos").insert({
+        title: document.getElementById("ph-title").value,
+        category: document.getElementById("ph-category").value,
+        image_url: fileUrl,
+      });
+      if (error) { alert("Erreur : " + error.message); console.error(error); return; }
+      e.target.reset();
+      loadPhotos();
+    } catch (err) {
+      alert(err.message);
+    }
   });
 
   // --- VIDEOS ---
@@ -486,12 +521,20 @@
 
   document.getElementById("form-course").addEventListener("submit", async (e) => {
     e.preventDefault();
+    let thumbUrl = null;
+    try {
+      thumbUrl = await uploadFileIfAny(document.getElementById("cr-thumb"), "courses");
+    } catch (err) {
+      alert(err.message);
+      return;
+    }
     const { error } = await supabaseClient.from("online_courses").insert({
       title: document.getElementById("cr-title").value,
       teacher_name: document.getElementById("cr-teacher").value,
       access_level: document.getElementById("cr-access").value,
       video_url: document.getElementById("cr-url").value,
       description: document.getElementById("cr-description").value,
+      thumbnail_url: thumbUrl,
     });
     if (error) { alert("Erreur : " + error.message); console.error(error); return; }
     e.target.reset();

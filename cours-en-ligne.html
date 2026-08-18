@@ -71,7 +71,7 @@
     }
     el.innerHTML = data.map(c => `
       <div class="card" style="padding:0;overflow:hidden;">
-        ${c.video_url ? `<iframe src="${toEmbedUrl(c.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : ""}
+        ${c.video_url ? `<iframe src="${toEmbedUrl(c.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : (c.thumbnail_url ? `<img src="${c.thumbnail_url}" alt="${c.title}" style="width:100%;aspect-ratio:16/9;object-fit:cover;">` : "")}
         <div style="padding:22px;">
           <div style="margin-bottom:8px;">
             <span class="pill ${c.access_level === 'eleves' ? 'pill-stage' : 'pill-cours'}">${c.access_level === 'eleves' ? 'Réservé aux élèves' : 'Public'}</span>
