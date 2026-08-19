@@ -68,18 +68,20 @@
     <section class="tab-panel active" id="panel-locations">
       <div class="panel-cols">
         <div class="box">
-          <h3>Ajouter un lieu</h3>
+          <h3 id="location-form-title">Ajouter un lieu</h3>
           <form id="form-location">
+            <input type="hidden" id="loc-edit-id" value="">
             <div class="form-field"><label>Nom</label><input type="text" id="loc-name" required></div>
             <div class="form-field"><label>Adresse</label><input type="text" id="loc-address"></div>
             <div class="form-field"><label>Horaires</label><input type="text" id="loc-schedule" placeholder="ex: Dimanche 14h-17h"></div>
             <div class="form-field"><label>Professeur</label><input type="text" id="loc-teacher"></div>
             <div class="form-field"><label>Description</label><textarea id="loc-description"></textarea></div>
-            <div class="form-field"><label>Photo du lieu (JPEG, GIF ou PDF)</label><input type="file" id="loc-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <div class="form-field"><label>Photo du lieu (JPEG, GIF ou PDF) — laisse vide pour garder la photo actuelle</label><input type="file" id="loc-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label>WhatsApp (numéro avec indicatif, ex: 33612345678)</label><input type="text" id="loc-whatsapp" placeholder="33612345678"></div>
             <div class="form-field"><label>Email de contact</label><input type="email" id="loc-email"></div>
             <div class="form-field"><label>Téléphone</label><input type="tel" id="loc-phone"></div>
-            <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="submit" id="loc-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="button" id="loc-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
           </form>
         </div>
         <div class="box">
@@ -95,8 +97,9 @@
     <section class="tab-panel" id="panel-events">
       <div class="panel-cols">
         <div class="box">
-          <h3>Ajouter un événement</h3>
+          <h3 id="event-form-title">Ajouter un événement</h3>
           <form id="form-event">
+            <input type="hidden" id="ev-edit-id" value="">
             <div class="form-field"><label>Titre</label><input type="text" id="ev-title" required></div>
 
             <div class="form-field"><label>Type</label>
@@ -123,12 +126,13 @@
             </div>
 
             <div class="form-field"><label>Description</label><textarea id="ev-description"></textarea></div>
-            <div class="form-field"><label>Photo (JPEG, GIF ou PDF)</label><input type="file" id="ev-image" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <div class="form-field"><label>Photo (JPEG, GIF ou PDF) — laisse vide pour garder la photo actuelle</label><input type="file" id="ev-image" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label>Vidéo (URL YouTube)</label><input type="url" id="ev-video" placeholder="https://youtube.com/..."></div>
             <div class="form-field"><label>Lien Instagram</label><input type="url" id="ev-instagram" placeholder="https://instagram.com/..."></div>
             <div class="form-field"><label>Lien Facebook</label><input type="url" id="ev-facebook" placeholder="https://facebook.com/..."></div>
 
-            <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="submit" id="ev-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="button" id="ev-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
           </form>
         </div>
         <div class="box">
@@ -144,13 +148,15 @@
     <section class="tab-panel" id="panel-photos">
       <div class="panel-cols">
         <div class="box">
-          <h3>Ajouter une photo</h3>
+          <h3 id="photo-form-title">Ajouter une photo</h3>
           <p style="font-size:.85rem;color:var(--grey);margin-top:-8px;">Envoie directement un fichier depuis ton ordinateur ou ton téléphone.</p>
           <form id="form-photo">
+            <input type="hidden" id="ph-edit-id" value="">
             <div class="form-field"><label>Titre</label><input type="text" id="ph-title"></div>
             <div class="form-field"><label>Catégorie / lieu</label><input type="text" id="ph-category"></div>
-            <div class="form-field"><label>Fichier (JPEG, GIF ou PDF)</label><input type="file" id="ph-file" accept=".jpg,.jpeg,.png,.gif,.pdf" required></div>
-            <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <div class="form-field"><label>Fichier (JPEG, GIF ou PDF) — laisse vide pour garder le fichier actuel</label><input type="file" id="ph-file" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <button type="submit" id="ph-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="button" id="ph-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
           </form>
         </div>
         <div class="box">
@@ -166,14 +172,16 @@
     <section class="tab-panel" id="panel-videos">
       <div class="panel-cols">
         <div class="box">
-          <h3>Ajouter une vidéo</h3>
+          <h3 id="video-form-title">Ajouter une vidéo</h3>
           <p style="font-size:.85rem;color:var(--grey);margin-top:-8px;">Colle un lien YouTube (ou autre lien embed).</p>
           <form id="form-video">
+            <input type="hidden" id="vd-edit-id" value="">
             <div class="form-field"><label>Titre</label><input type="text" id="vd-title"></div>
             <div class="form-field"><label>URL vidéo (YouTube)</label><input type="url" id="vd-url" required></div>
             <div class="form-field"><label>Description</label><textarea id="vd-description"></textarea></div>
-            <div class="form-field"><label>Photo / miniature (JPEG ou GIF)</label><input type="file" id="vd-thumb" accept=".jpg,.jpeg,.png,.gif"></div>
-            <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <div class="form-field"><label>Photo / miniature (JPEG ou GIF) — laisse vide pour garder l'actuelle</label><input type="file" id="vd-thumb" accept=".jpg,.jpeg,.png,.gif"></div>
+            <button type="submit" id="vd-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="button" id="vd-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
           </form>
         </div>
         <div class="box">
@@ -189,8 +197,9 @@
     <section class="tab-panel" id="panel-courses">
       <div class="panel-cols">
         <div class="box">
-          <h3>Ajouter un cours en ligne</h3>
+          <h3 id="course-form-title">Ajouter un cours en ligne</h3>
           <form id="form-course">
+            <input type="hidden" id="cr-edit-id" value="">
             <div class="form-field"><label>Titre</label><input type="text" id="cr-title" required></div>
             <div class="form-field"><label>Professeur</label><input type="text" id="cr-teacher"></div>
             <div class="form-field"><label>Accès</label>
@@ -200,9 +209,10 @@
               </select>
             </div>
             <div class="form-field"><label>URL vidéo (YouTube)</label><input type="url" id="cr-url"></div>
-            <div class="form-field"><label>Image miniature (JPEG, GIF ou PDF)</label><input type="file" id="cr-thumb" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <div class="form-field"><label>Image miniature (JPEG, GIF ou PDF) — laisse vide pour garder l'actuelle</label><input type="file" id="cr-thumb" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label>Description</label><textarea id="cr-description"></textarea></div>
-            <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="submit" id="cr-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="button" id="cr-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
           </form>
         </div>
         <div class="box">
@@ -218,13 +228,15 @@
     <section class="tab-panel" id="panel-songs">
       <div class="panel-cols">
         <div class="box">
-          <h3>Ajouter une chanson</h3>
+          <h3 id="song-form-title">Ajouter une chanson</h3>
           <form id="form-song">
+            <input type="hidden" id="sg-edit-id" value="">
             <div class="form-field"><label>Titre</label><input type="text" id="sg-title" required></div>
             <div class="form-field"><label>Paroles (original)</label><textarea id="sg-lyrics" style="min-height:160px;"></textarea></div>
             <div class="form-field"><label>Traduction en français</label><textarea id="sg-translation" style="min-height:160px;"></textarea></div>
             <div class="form-field"><label>Lien YouTube ou Instagram (comment la chanter)</label><input type="url" id="sg-media" placeholder="https://..."></div>
-            <button type="submit" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="submit" id="sg-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="button" id="sg-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
           </form>
         </div>
         <div class="box">
@@ -376,36 +388,77 @@
   });
 
   // --- LIEUX ---
+  let locationsCache = [];
   async function loadLocations() {
     const { data } = await supabaseClient.from("locations").select("*").order("name");
+    locationsCache = data || [];
     const tbody = document.getElementById("locations-table");
     const select = document.getElementById("ev-location");
-    tbody.innerHTML = (data || []).map(l => `
+    tbody.innerHTML = locationsCache.map(l => `
       <tr><td>${l.name}</td><td>${l.schedule || "—"}</td>
-      <td class="row-actions"><button onclick="deleteRow('locations','${l.id}', loadLocations)">Supprimer</button></td></tr>
+      <td class="row-actions">
+        <button onclick="editLocation('${l.id}')">Modifier</button>
+        <button onclick="deleteRow('locations','${l.id}', loadLocations)">Supprimer</button>
+      </td></tr>
     `).join("") || `<tr><td colspan="3">Aucun lieu.</td></tr>`;
     select.innerHTML = `<option value="">— Choisir un lieu habituel —</option>` +
-      (data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join("") +
+      locationsCache.map(l => `<option value="${l.id}">${l.name}</option>`).join("") +
       `<option value="__autre__">Autre (préciser)</option>`;
   }
+
+  function editLocation(id) {
+    const l = locationsCache.find(x => x.id === id);
+    if (!l) return;
+    document.getElementById("loc-edit-id").value = l.id;
+    document.getElementById("loc-name").value = l.name || "";
+    document.getElementById("loc-address").value = l.address || "";
+    document.getElementById("loc-schedule").value = l.schedule || "";
+    document.getElementById("loc-teacher").value = l.teacher_name || "";
+    document.getElementById("loc-description").value = l.description || "";
+    document.getElementById("loc-whatsapp").value = l.contact_whatsapp || "";
+    document.getElementById("loc-email").value = l.contact_email || "";
+    document.getElementById("loc-phone").value = l.contact_phone || "";
+    document.getElementById("location-form-title").textContent = "Modifier le lieu";
+    document.getElementById("loc-submit-btn").textContent = "Enregistrer les modifications";
+    document.getElementById("loc-cancel-btn").style.display = "block";
+    document.getElementById("panel-locations").scrollIntoView({ behavior: "smooth" });
+  }
+
+  document.getElementById("loc-cancel-btn").addEventListener("click", () => {
+    document.getElementById("form-location").reset();
+    document.getElementById("loc-edit-id").value = "";
+    document.getElementById("location-form-title").textContent = "Ajouter un lieu";
+    document.getElementById("loc-submit-btn").textContent = "Ajouter";
+    document.getElementById("loc-cancel-btn").style.display = "none";
+  });
 
   document.getElementById("form-location").addEventListener("submit", async (e) => {
     e.preventDefault();
     try {
+      const editId = document.getElementById("loc-edit-id").value;
       const photoUrl = await uploadFileIfAny(document.getElementById("loc-photo"), "locations");
-      const { error } = await supabaseClient.from("locations").insert({
+      const payload = {
         name: document.getElementById("loc-name").value,
         address: document.getElementById("loc-address").value,
         schedule: document.getElementById("loc-schedule").value,
         teacher_name: document.getElementById("loc-teacher").value,
         description: document.getElementById("loc-description").value,
-        image_url: photoUrl,
         contact_whatsapp: document.getElementById("loc-whatsapp").value || null,
         contact_email: document.getElementById("loc-email").value || null,
         contact_phone: document.getElementById("loc-phone").value || null,
-      });
+      };
+      if (photoUrl) payload.image_url = photoUrl;
+
+      const { error } = editId
+        ? await supabaseClient.from("locations").update(payload).eq("id", editId)
+        : await supabaseClient.from("locations").insert({ ...payload, image_url: photoUrl });
+
       if (error) { alert("Erreur : " + error.message); console.error(error); return; }
       e.target.reset();
+      document.getElementById("loc-edit-id").value = "";
+      document.getElementById("location-form-title").textContent = "Ajouter un lieu";
+      document.getElementById("loc-submit-btn").textContent = "Ajouter";
+      document.getElementById("loc-cancel-btn").style.display = "none";
       loadLocations();
     } catch (err) {
       alert(err.message);
@@ -422,9 +475,18 @@
     return "pill-cours";
   }
 
+  let eventsCache = [];
+  function toLocalInputValue(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    const pad = n => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
   async function loadEvents() {
     const { data } = await supabaseClient.from("events").select("*, locations(name)").order("event_date");
-    document.getElementById("events-table").innerHTML = (data || []).map(ev => {
+    eventsCache = data || [];
+    document.getElementById("events-table").innerHTML = eventsCache.map(ev => {
       const lieu = ev.locations ? ev.locations.name : (ev.location_other || "—");
       const dateRange = ev.end_date
         ? `${new Date(ev.event_date).toLocaleDateString('fr-FR')} → ${new Date(ev.end_date).toLocaleDateString('fr-FR')}`
@@ -434,10 +496,51 @@
         <td>${dateRange}</td>
         <td>${ev.title}<br><span style="color:var(--grey);font-size:.8rem;">${lieu}</span></td>
         <td><span class="pill ${eventTypePillClass(ev.event_type)}">${eventTypeLabel(ev.event_type)}</span></td>
-        <td class="row-actions"><button onclick="deleteRow('events','${ev.id}', loadEvents)">Supprimer</button></td>
+        <td class="row-actions">
+          <button onclick="editEvent('${ev.id}')">Modifier</button>
+          <button onclick="deleteRow('events','${ev.id}', loadEvents)">Supprimer</button>
+        </td>
       </tr>`;
     }).join("") || `<tr><td colspan="4">Aucun événement.</td></tr>`;
   }
+
+  function editEvent(id) {
+    const ev = eventsCache.find(x => x.id === id);
+    if (!ev) return;
+    document.getElementById("ev-edit-id").value = ev.id;
+    document.getElementById("ev-title").value = ev.title || "";
+    document.getElementById("ev-type").value = ev.event_type || "cours";
+    document.getElementById("ev-start").value = toLocalInputValue(ev.event_date);
+    document.getElementById("ev-end").value = toLocalInputValue(ev.end_date);
+    if (ev.location_id) {
+      document.getElementById("ev-location").value = ev.location_id;
+      document.getElementById("ev-custom-location-wrap").style.display = "none";
+    } else if (ev.location_other) {
+      document.getElementById("ev-location").value = "__autre__";
+      document.getElementById("ev-custom-location").value = ev.location_other;
+      document.getElementById("ev-custom-location-wrap").style.display = "block";
+    } else {
+      document.getElementById("ev-location").value = "";
+      document.getElementById("ev-custom-location-wrap").style.display = "none";
+    }
+    document.getElementById("ev-description").value = ev.description || "";
+    document.getElementById("ev-video").value = ev.video_url || "";
+    document.getElementById("ev-instagram").value = ev.instagram_url || "";
+    document.getElementById("ev-facebook").value = ev.facebook_url || "";
+    document.getElementById("event-form-title").textContent = "Modifier l'événement";
+    document.getElementById("ev-submit-btn").textContent = "Enregistrer les modifications";
+    document.getElementById("ev-cancel-btn").style.display = "block";
+    document.getElementById("panel-events").scrollIntoView({ behavior: "smooth" });
+  }
+
+  document.getElementById("ev-cancel-btn").addEventListener("click", () => {
+    document.getElementById("form-event").reset();
+    document.getElementById("ev-edit-id").value = "";
+    document.getElementById("ev-custom-location-wrap").style.display = "none";
+    document.getElementById("event-form-title").textContent = "Ajouter un événement";
+    document.getElementById("ev-submit-btn").textContent = "Ajouter";
+    document.getElementById("ev-cancel-btn").style.display = "none";
+  });
 
   // Affiche/masque le champ "préciser le lieu" selon la sélection
   document.getElementById("ev-location").addEventListener("change", (e) => {
@@ -446,6 +549,7 @@
 
   document.getElementById("form-event").addEventListener("submit", async (e) => {
     e.preventDefault();
+    const editId = document.getElementById("ev-edit-id").value;
     const locationVal = document.getElementById("ev-location").value;
     const isCustom = locationVal === "__autre__";
     const startVal = document.getElementById("ev-start").value;
@@ -464,7 +568,7 @@
       return;
     }
 
-    const { error } = await supabaseClient.from("events").insert({
+    const payload = {
       title: document.getElementById("ev-title").value,
       event_date: new Date(startVal).toISOString(),
       end_date: endVal ? new Date(endVal).toISOString() : null,
@@ -472,11 +576,15 @@
       location_id: (!isCustom && locationVal) ? locationVal : null,
       location_other: isCustom ? document.getElementById("ev-custom-location").value : null,
       description: document.getElementById("ev-description").value,
-      image_url: imageUrl,
       video_url: document.getElementById("ev-video").value || null,
       instagram_url: document.getElementById("ev-instagram").value || null,
       facebook_url: document.getElementById("ev-facebook").value || null,
-    });
+    };
+    if (imageUrl) payload.image_url = imageUrl;
+
+    const { error } = editId
+      ? await supabaseClient.from("events").update(payload).eq("id", editId)
+      : await supabaseClient.from("events").insert({ ...payload, image_url: imageUrl });
 
     if (error) {
       alert("Erreur lors de l'enregistrement : " + error.message);
@@ -485,34 +593,74 @@
     }
 
     e.target.reset();
+    document.getElementById("ev-edit-id").value = "";
     document.getElementById("ev-custom-location-wrap").style.display = "none";
+    document.getElementById("event-form-title").textContent = "Ajouter un événement";
+    document.getElementById("ev-submit-btn").textContent = "Ajouter";
+    document.getElementById("ev-cancel-btn").style.display = "none";
     loadEvents();
   });
 
   // --- PHOTOS ---
+  let photosCache = [];
   async function loadPhotos() {
     const { data } = await supabaseClient.from("gallery_photos").select("*").order("created_at", { ascending:false });
-    document.getElementById("photos-table").innerHTML = (data || []).map(p => `
+    photosCache = data || [];
+    document.getElementById("photos-table").innerHTML = photosCache.map(p => `
       <tr>
         <td><img src="${p.image_url}" style="width:56px;height:56px;object-fit:cover;"></td>
         <td>${p.title || "—"}</td>
-        <td class="row-actions"><button onclick="deleteRow('gallery_photos','${p.id}', loadPhotos)">Supprimer</button></td>
+        <td class="row-actions">
+          <button onclick="editPhoto('${p.id}')">Modifier</button>
+          <button onclick="deleteRow('gallery_photos','${p.id}', loadPhotos)">Supprimer</button>
+        </td>
       </tr>
     `).join("") || `<tr><td colspan="3">Aucune photo.</td></tr>`;
   }
 
+  function editPhoto(id) {
+    const p = photosCache.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById("ph-edit-id").value = p.id;
+    document.getElementById("ph-title").value = p.title || "";
+    document.getElementById("ph-category").value = p.category || "";
+    document.getElementById("photo-form-title").textContent = "Modifier la photo";
+    document.getElementById("ph-submit-btn").textContent = "Enregistrer les modifications";
+    document.getElementById("ph-cancel-btn").style.display = "block";
+    document.getElementById("panel-photos").scrollIntoView({ behavior: "smooth" });
+  }
+
+  document.getElementById("ph-cancel-btn").addEventListener("click", () => {
+    document.getElementById("form-photo").reset();
+    document.getElementById("ph-edit-id").value = "";
+    document.getElementById("photo-form-title").textContent = "Ajouter une photo";
+    document.getElementById("ph-submit-btn").textContent = "Ajouter";
+    document.getElementById("ph-cancel-btn").style.display = "none";
+  });
+
   document.getElementById("form-photo").addEventListener("submit", async (e) => {
     e.preventDefault();
     try {
+      const editId = document.getElementById("ph-edit-id").value;
       const fileUrl = await uploadFileIfAny(document.getElementById("ph-file"), "gallery");
-      if (!fileUrl) { alert("Merci de choisir un fichier."); return; }
-      const { error } = await supabaseClient.from("gallery_photos").insert({
+      if (!editId && !fileUrl) { alert("Merci de choisir un fichier."); return; }
+
+      const payload = {
         title: document.getElementById("ph-title").value,
         category: document.getElementById("ph-category").value,
-        image_url: fileUrl,
-      });
+      };
+      if (fileUrl) payload.image_url = fileUrl;
+
+      const { error } = editId
+        ? await supabaseClient.from("gallery_photos").update(payload).eq("id", editId)
+        : await supabaseClient.from("gallery_photos").insert({ ...payload, image_url: fileUrl });
+
       if (error) { alert("Erreur : " + error.message); console.error(error); return; }
       e.target.reset();
+      document.getElementById("ph-edit-id").value = "";
+      document.getElementById("photo-form-title").textContent = "Ajouter une photo";
+      document.getElementById("ph-submit-btn").textContent = "Ajouter";
+      document.getElementById("ph-cancel-btn").style.display = "none";
       loadPhotos();
     } catch (err) {
       alert(err.message);
@@ -520,16 +668,43 @@
   });
 
   // --- VIDEOS ---
+  let videosCache = [];
   async function loadVideos() {
     const { data } = await supabaseClient.from("gallery_videos").select("*").order("created_at", { ascending:false });
-    document.getElementById("videos-table").innerHTML = (data || []).map(v => `
+    videosCache = data || [];
+    document.getElementById("videos-table").innerHTML = videosCache.map(v => `
       <tr><td>${v.title || "—"}</td>
-      <td class="row-actions"><button onclick="deleteRow('gallery_videos','${v.id}', loadVideos)">Supprimer</button></td></tr>
+      <td class="row-actions">
+        <button onclick="editVideo('${v.id}')">Modifier</button>
+        <button onclick="deleteRow('gallery_videos','${v.id}', loadVideos)">Supprimer</button>
+      </td></tr>
     `).join("") || `<tr><td colspan="2">Aucune vidéo.</td></tr>`;
   }
 
+  function editVideo(id) {
+    const v = videosCache.find(x => x.id === id);
+    if (!v) return;
+    document.getElementById("vd-edit-id").value = v.id;
+    document.getElementById("vd-title").value = v.title || "";
+    document.getElementById("vd-url").value = v.video_url || "";
+    document.getElementById("vd-description").value = v.description || "";
+    document.getElementById("video-form-title").textContent = "Modifier la vidéo";
+    document.getElementById("vd-submit-btn").textContent = "Enregistrer les modifications";
+    document.getElementById("vd-cancel-btn").style.display = "block";
+    document.getElementById("panel-videos").scrollIntoView({ behavior: "smooth" });
+  }
+
+  document.getElementById("vd-cancel-btn").addEventListener("click", () => {
+    document.getElementById("form-video").reset();
+    document.getElementById("vd-edit-id").value = "";
+    document.getElementById("video-form-title").textContent = "Ajouter une vidéo";
+    document.getElementById("vd-submit-btn").textContent = "Ajouter";
+    document.getElementById("vd-cancel-btn").style.display = "none";
+  });
+
   document.getElementById("form-video").addEventListener("submit", async (e) => {
     e.preventDefault();
+    const editId = document.getElementById("vd-edit-id").value;
     let thumbUrl = null;
     try {
       thumbUrl = await uploadFileIfAny(document.getElementById("vd-thumb"), "videos");
@@ -537,29 +712,67 @@
       alert(err.message);
       return;
     }
-    const { error } = await supabaseClient.from("gallery_videos").insert({
+    const payload = {
       title: document.getElementById("vd-title").value,
       video_url: document.getElementById("vd-url").value,
       description: document.getElementById("vd-description").value,
-      thumbnail_url: thumbUrl,
-    });
+    };
+    if (thumbUrl) payload.thumbnail_url = thumbUrl;
+
+    const { error } = editId
+      ? await supabaseClient.from("gallery_videos").update(payload).eq("id", editId)
+      : await supabaseClient.from("gallery_videos").insert({ ...payload, thumbnail_url: thumbUrl });
+
     if (error) { alert("Erreur : " + error.message); console.error(error); return; }
     e.target.reset();
+    document.getElementById("vd-edit-id").value = "";
+    document.getElementById("video-form-title").textContent = "Ajouter une vidéo";
+    document.getElementById("vd-submit-btn").textContent = "Ajouter";
+    document.getElementById("vd-cancel-btn").style.display = "none";
     loadVideos();
   });
 
   // --- COURS EN LIGNE ---
+  let coursesCache = [];
   async function loadCourses() {
     const { data } = await supabaseClient.from("online_courses").select("*").order("created_at", { ascending:false });
-    document.getElementById("courses-table").innerHTML = (data || []).map(c => `
+    coursesCache = data || [];
+    document.getElementById("courses-table").innerHTML = coursesCache.map(c => `
       <tr><td>${c.title}</td><td>${c.teacher_name || "—"}</td>
       <td><span class="pill ${c.access_level === 'eleves' ? 'pill-stage' : 'pill-cours'}">${c.access_level === 'eleves' ? 'Élèves' : 'Public'}</span></td>
-      <td class="row-actions"><button onclick="deleteRow('online_courses','${c.id}', loadCourses)">Supprimer</button></td></tr>
+      <td class="row-actions">
+        <button onclick="editCourse('${c.id}')">Modifier</button>
+        <button onclick="deleteRow('online_courses','${c.id}', loadCourses)">Supprimer</button>
+      </td></tr>
     `).join("") || `<tr><td colspan="4">Aucun cours.</td></tr>`;
   }
 
+  function editCourse(id) {
+    const c = coursesCache.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById("cr-edit-id").value = c.id;
+    document.getElementById("cr-title").value = c.title || "";
+    document.getElementById("cr-teacher").value = c.teacher_name || "";
+    document.getElementById("cr-access").value = c.access_level || "public";
+    document.getElementById("cr-url").value = c.video_url || "";
+    document.getElementById("cr-description").value = c.description || "";
+    document.getElementById("course-form-title").textContent = "Modifier le cours";
+    document.getElementById("cr-submit-btn").textContent = "Enregistrer les modifications";
+    document.getElementById("cr-cancel-btn").style.display = "block";
+    document.getElementById("panel-courses").scrollIntoView({ behavior: "smooth" });
+  }
+
+  document.getElementById("cr-cancel-btn").addEventListener("click", () => {
+    document.getElementById("form-course").reset();
+    document.getElementById("cr-edit-id").value = "";
+    document.getElementById("course-form-title").textContent = "Ajouter un cours en ligne";
+    document.getElementById("cr-submit-btn").textContent = "Ajouter";
+    document.getElementById("cr-cancel-btn").style.display = "none";
+  });
+
   document.getElementById("form-course").addEventListener("submit", async (e) => {
     e.preventDefault();
+    const editId = document.getElementById("cr-edit-id").value;
     let thumbUrl = null;
     try {
       thumbUrl = await uploadFileIfAny(document.getElementById("cr-thumb"), "courses");
@@ -567,20 +780,27 @@
       alert(err.message);
       return;
     }
-    const { error } = await supabaseClient.from("online_courses").insert({
+    const payload = {
       title: document.getElementById("cr-title").value,
       teacher_name: document.getElementById("cr-teacher").value,
       access_level: document.getElementById("cr-access").value,
       video_url: document.getElementById("cr-url").value,
       description: document.getElementById("cr-description").value,
-      thumbnail_url: thumbUrl,
-    });
+    };
+    if (thumbUrl) payload.thumbnail_url = thumbUrl;
+
+    const { error } = editId
+      ? await supabaseClient.from("online_courses").update(payload).eq("id", editId)
+      : await supabaseClient.from("online_courses").insert({ ...payload, thumbnail_url: thumbUrl });
+
     if (error) { alert("Erreur : " + error.message); console.error(error); return; }
     e.target.reset();
+    document.getElementById("cr-edit-id").value = "";
+    document.getElementById("course-form-title").textContent = "Ajouter un cours en ligne";
+    document.getElementById("cr-submit-btn").textContent = "Ajouter";
+    document.getElementById("cr-cancel-btn").style.display = "none";
     loadCourses();
   });
-
-  // --- Suppression générique ---
   async function deleteRow(table, id, reload) {
     if (!confirm("Supprimer cet élément ?")) return;
     await supabaseClient.from(table).delete().eq("id", id);
@@ -793,24 +1013,59 @@
   });
 
   // --- CHANSONS ---
+  let songsCache = [];
   async function loadSongs() {
     const { data } = await supabaseClient.from("songs").select("*").order("title");
-    document.getElementById("songs-table").innerHTML = (data || []).map(s => `
+    songsCache = data || [];
+    document.getElementById("songs-table").innerHTML = songsCache.map(s => `
       <tr><td>${s.title}</td>
-      <td class="row-actions"><button onclick="deleteRow('songs','${s.id}', loadSongs)">Supprimer</button></td></tr>
+      <td class="row-actions">
+        <button onclick="editSong('${s.id}')">Modifier</button>
+        <button onclick="deleteRow('songs','${s.id}', loadSongs)">Supprimer</button>
+      </td></tr>
     `).join("") || `<tr><td colspan="2">Aucune chanson.</td></tr>`;
   }
 
+  function editSong(id) {
+    const s = songsCache.find(x => x.id === id);
+    if (!s) return;
+    document.getElementById("sg-edit-id").value = s.id;
+    document.getElementById("sg-title").value = s.title || "";
+    document.getElementById("sg-lyrics").value = s.lyrics_original || "";
+    document.getElementById("sg-translation").value = s.lyrics_translation || "";
+    document.getElementById("sg-media").value = s.media_url || "";
+    document.getElementById("song-form-title").textContent = "Modifier la chanson";
+    document.getElementById("sg-submit-btn").textContent = "Enregistrer les modifications";
+    document.getElementById("sg-cancel-btn").style.display = "block";
+    document.getElementById("panel-songs").scrollIntoView({ behavior: "smooth" });
+  }
+
+  document.getElementById("sg-cancel-btn").addEventListener("click", () => {
+    document.getElementById("form-song").reset();
+    document.getElementById("sg-edit-id").value = "";
+    document.getElementById("song-form-title").textContent = "Ajouter une chanson";
+    document.getElementById("sg-submit-btn").textContent = "Ajouter";
+    document.getElementById("sg-cancel-btn").style.display = "none";
+  });
+
   document.getElementById("form-song").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const { error } = await supabaseClient.from("songs").insert({
+    const editId = document.getElementById("sg-edit-id").value;
+    const payload = {
       title: document.getElementById("sg-title").value,
       lyrics_original: document.getElementById("sg-lyrics").value,
       lyrics_translation: document.getElementById("sg-translation").value,
       media_url: document.getElementById("sg-media").value || null,
-    });
+    };
+    const { error } = editId
+      ? await supabaseClient.from("songs").update(payload).eq("id", editId)
+      : await supabaseClient.from("songs").insert(payload);
     if (error) { alert("Erreur : " + error.message); console.error(error); return; }
     e.target.reset();
+    document.getElementById("sg-edit-id").value = "";
+    document.getElementById("song-form-title").textContent = "Ajouter une chanson";
+    document.getElementById("sg-submit-btn").textContent = "Ajouter";
+    document.getElementById("sg-cancel-btn").style.display = "none";
     loadSongs();
   });
 
