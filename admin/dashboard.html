@@ -55,6 +55,7 @@
     <button class="tab-btn" data-tab="account" style="margin-top:20px;">Mon compte</button>
     <button class="tab-btn" id="logout-btn" style="color:var(--red);">Se déconnecter</button>
     <a href="../index.html" class="tab-btn" style="display:block;">&larr; Voir le site</a>
+    <a href="#" id="sidebar-passeport" class="tab-btn" style="display:none;" target="_blank" rel="noopener">📊 Passeport Capoeira</a>
   </aside>
 
   <main class="admin-main">
@@ -722,6 +723,7 @@
     contact_general_phone: "Téléphone de contact général (optionnel)",
     cotisation_url: "Lien HelloAsso — Payer sa cotisation",
     teampulse_url: "Lien TeamPulse — Espace membres du club",
+    passeport_url: "Lien Passeport Capoeira (Google Sheets — visible uniquement ici, dans le dashboard)",
     home_hero_image: "Photo du bandeau principal (page d'accueil)",
     home_section1_image: "Photo sous le titre \"École\"",
     home_card1_image: "Photo — Carte 1 (Transmission)",
@@ -849,6 +851,14 @@
   loadInvites();
   loadStats();
   loadContentForm();
+
+  // Lien Passeport Capoeira dans la barre latérale (si renseigné)
+  supabaseClient.from("site_content").select("value").eq("key", "passeport_url").maybeSingle().then(({ data }) => {
+    if (data?.value) {
+      const el = document.getElementById("sidebar-passeport");
+      if (el) { el.href = data.value; el.style.display = "block"; }
+    }
+  });
 </script>
 </body>
 </html>
