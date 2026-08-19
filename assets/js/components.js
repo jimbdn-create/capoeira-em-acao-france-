@@ -61,6 +61,7 @@ function renderFooter() {
           <div>
             <h4>Contact</h4>
             <div id="footer-contact" style="color:#b8b3af;font-size:.93rem;padding:4px 0;">Chargement…</div>
+            <div id="footer-cotisation"></div>
             <a href="admin/login.html">Espace admin</a>
           </div>
         </div>
@@ -73,15 +74,21 @@ function renderFooter() {
 
   // Charge l'email/téléphone de contact général depuis le contenu du site (modifiable dans le dashboard admin)
   if (typeof supabaseClient !== "undefined") {
-    supabaseClient.from("site_content").select("key, value").in("key", ["contact_general_email", "contact_general_phone"]).then(({ data }) => {
+    supabaseClient.from("site_content").select("key, value").in("key", ["contact_general_email", "contact_general_phone", "cotisation_url"]).then(({ data }) => {
       const el = document.getElementById("footer-contact");
       if (!el || !data) return;
       const email = data.find(r => r.key === "contact_general_email")?.value;
       const phone = data.find(r => r.key === "contact_general_phone")?.value;
+      const cotisationUrl = data.find(r => r.key === "cotisation_url")?.value;
       let html = "";
       if (email) html += `<a href="mailto:${email}">${email}</a>`;
       if (phone) html += `<a href="tel:${phone}">${phone}</a>`;
       el.outerHTML = html || `<span style="color:#b8b3af;font-size:.93rem;">Contact à venir</span>`;
+
+      const cotisationEl = document.getElementById("footer-cotisation");
+      if (cotisationEl && cotisationUrl) {
+        cotisationEl.innerHTML = `<a href="${cotisationUrl}" target="_blank" rel="noopener" style="color:var(--red);font-weight:600;">Payer ma cotisation ↗</a>`;
+      }
     });
   }
 }
