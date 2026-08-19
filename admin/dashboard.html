@@ -77,6 +77,7 @@
             <div class="form-field"><label>Professeur</label><input type="text" id="loc-teacher"></div>
             <div class="form-field"><label>Description</label><textarea id="loc-description"></textarea></div>
             <div class="form-field"><label>Photo du lieu (JPEG, GIF ou PDF) — laisse vide pour garder la photo actuelle</label><input type="file" id="loc-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="loc-photo-remove" style="width:auto;"> Retirer la photo actuelle (aucune photo)</label></div>
             <div class="form-field"><label>WhatsApp (numéro avec indicatif, ex: 33612345678)</label><input type="text" id="loc-whatsapp" placeholder="33612345678"></div>
             <div class="form-field"><label>Email de contact</label><input type="email" id="loc-email"></div>
             <div class="form-field"><label>Téléphone</label><input type="tel" id="loc-phone"></div>
@@ -127,6 +128,7 @@
 
             <div class="form-field"><label>Description</label><textarea id="ev-description"></textarea></div>
             <div class="form-field"><label>Photo (JPEG, GIF ou PDF) — laisse vide pour garder la photo actuelle</label><input type="file" id="ev-image" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="ev-image-remove" style="width:auto;"> Retirer la photo actuelle (aucune photo)</label></div>
             <div class="form-field"><label>Vidéo (URL YouTube)</label><input type="url" id="ev-video" placeholder="https://youtube.com/..."></div>
             <div class="form-field"><label>Lien Instagram</label><input type="url" id="ev-instagram" placeholder="https://instagram.com/..."></div>
             <div class="form-field"><label>Lien Facebook</label><input type="url" id="ev-facebook" placeholder="https://facebook.com/..."></div>
@@ -180,6 +182,7 @@
             <div class="form-field"><label>URL vidéo (YouTube)</label><input type="url" id="vd-url" required></div>
             <div class="form-field"><label>Description</label><textarea id="vd-description"></textarea></div>
             <div class="form-field"><label>Photo / miniature (JPEG ou GIF) — laisse vide pour garder l'actuelle</label><input type="file" id="vd-thumb" accept=".jpg,.jpeg,.png,.gif"></div>
+            <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="vd-thumb-remove" style="width:auto;"> Retirer la miniature actuelle (aucune photo)</label></div>
             <button type="submit" id="vd-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
             <button type="button" id="vd-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
           </form>
@@ -210,6 +213,7 @@
             </div>
             <div class="form-field"><label>URL vidéo (YouTube)</label><input type="url" id="cr-url"></div>
             <div class="form-field"><label>Image miniature (JPEG, GIF ou PDF) — laisse vide pour garder l'actuelle</label><input type="file" id="cr-thumb" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="cr-thumb-remove" style="width:auto;"> Retirer la miniature actuelle (aucune photo)</label></div>
             <div class="form-field"><label>Description</label><textarea id="cr-description"></textarea></div>
             <button type="submit" id="cr-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
             <button type="button" id="cr-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
@@ -448,6 +452,7 @@
         contact_phone: document.getElementById("loc-phone").value || null,
       };
       if (photoUrl) payload.image_url = photoUrl;
+      else if (document.getElementById("loc-photo-remove").checked) payload.image_url = null;
 
       const { error } = editId
         ? await supabaseClient.from("locations").update(payload).eq("id", editId)
@@ -581,6 +586,7 @@
       facebook_url: document.getElementById("ev-facebook").value || null,
     };
     if (imageUrl) payload.image_url = imageUrl;
+    else if (document.getElementById("ev-image-remove").checked) payload.image_url = null;
 
     const { error } = editId
       ? await supabaseClient.from("events").update(payload).eq("id", editId)
@@ -718,6 +724,7 @@
       description: document.getElementById("vd-description").value,
     };
     if (thumbUrl) payload.thumbnail_url = thumbUrl;
+    else if (document.getElementById("vd-thumb-remove").checked) payload.thumbnail_url = null;
 
     const { error } = editId
       ? await supabaseClient.from("gallery_videos").update(payload).eq("id", editId)
@@ -788,6 +795,7 @@
       description: document.getElementById("cr-description").value,
     };
     if (thumbUrl) payload.thumbnail_url = thumbUrl;
+    else if (document.getElementById("cr-thumb-remove").checked) payload.thumbnail_url = null;
 
     const { error } = editId
       ? await supabaseClient.from("online_courses").update(payload).eq("id", editId)
