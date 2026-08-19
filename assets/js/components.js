@@ -19,8 +19,7 @@ function renderHeader(active) {
     <header class="site-header">
       <div class="wrap">
         <a href="index.html" class="brand">
-          <img src="assets/img/logo-badge.png" alt="Capoeira em Ação France">
-          <span>Capoeira em <em>Ação</em> France</span>
+          <img src="assets/img/logo-horizontal.png" alt="Capoeira em Ação France - Mestre Cascavel">
         </a>
         <nav class="main-nav" id="main-nav">${links}</nav>
         <a href="lieux.html" class="btn btn-red header-cta" style="padding:10px 22px;font-size:.9rem;margin-left:14px;">Rejoindre un cours</a>
