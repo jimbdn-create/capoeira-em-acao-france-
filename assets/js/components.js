@@ -13,7 +13,7 @@ function renderHeader(active) {
   ];
   const links = items.map(([href, label]) =>
     `<a href="${href}" class="${active === href ? 'active' : ''}">${label}</a>`
-  ).join("");
+  ).join("") + `<a href="#" id="nav-teampulse" style="display:none;" target="_blank" rel="noopener">Espace membres</a>`;
 
   document.getElementById("site-header").innerHTML = `
     <header class="site-header">
@@ -28,6 +28,17 @@ function renderHeader(active) {
       </div>
     </header>
   `;
+
+  // Affiche le lien "Espace membres" seulement si un lien TeamPulse a été renseigné dans le dashboard
+  if (typeof supabaseClient !== "undefined") {
+    supabaseClient.from("site_content").select("value").eq("key", "teampulse_url").maybeSingle().then(({ data }) => {
+      if (data?.value) {
+        const el = document.getElementById("nav-teampulse");
+        if (el) { el.href = data.value; el.style.display = ""; }
+      }
+    });
+  }
+
   document.getElementById("nav-toggle").addEventListener("click", () => {
     document.getElementById("main-nav").classList.toggle("open");
   });
