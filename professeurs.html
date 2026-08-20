@@ -48,9 +48,19 @@
 
   const iconStyle = "width:14px;height:14px;";
 
+  function teacherRank(title) {
+    const t = (title || "").toLowerCase();
+    if (t.includes("contramestre") || t.includes("contra-mestre") || t.includes("contra mestre")) return 2;
+    if (t.includes("mestre")) return 1;
+    if (t.includes("professor") || t.includes("professora")) return 3;
+    if (t.includes("instrutor") || t.includes("instructeur") || t.includes("estagi") || t.includes("stagiaire") || t.includes("monitor")) return 4;
+    return 5;
+  }
+
   async function loadTeachers() {
     const el = document.getElementById("teachers-list");
-    const { data, error } = await supabaseClient.from("teachers").select("*").order("name");
+    const { data, error } = await supabaseClient.from("teachers").select("*");
+    if (data) data.sort((a, b) => teacherRank(a.title) - teacherRank(b.title) || (a.name || "").localeCompare(b.name || ""));
     if (error || !data || data.length === 0) {
       el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">👤</div>Aucun professeur publié pour le moment.</div>`;
       return;

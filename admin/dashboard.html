@@ -1210,9 +1210,17 @@
 
   // --- PROFESSEURS ---
   let teachersCache = [];
+  function teacherRank(title) {
+    const t = (title || "").toLowerCase();
+    if (t.includes("contramestre") || t.includes("contra-mestre") || t.includes("contra mestre")) return 2;
+    if (t.includes("mestre")) return 1;
+    if (t.includes("professor") || t.includes("professora")) return 3;
+    if (t.includes("instrutor") || t.includes("instructeur") || t.includes("estagi") || t.includes("stagiaire") || t.includes("monitor")) return 4;
+    return 5;
+  }
   async function loadTeachers() {
-    const { data } = await supabaseClient.from("teachers").select("*").order("name");
-    teachersCache = data || [];
+    const { data } = await supabaseClient.from("teachers").select("*");
+    teachersCache = (data || []).sort((a, b) => teacherRank(a.title) - teacherRank(b.title) || (a.name || "").localeCompare(b.name || ""));
     document.getElementById("teachers-table").innerHTML = teachersCache.map(t => `
       <tr><td>${t.name}</td><td>${t.title || "—"}</td>
       <td class="row-actions">
