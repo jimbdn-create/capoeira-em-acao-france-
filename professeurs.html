@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos professeurs — Capoeira em Ação France</title>
+<link rel="icon" href="assets/img/logo-badge.png">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .teacher-card { background: var(--white); border: 1px solid var(--grey-line); overflow: hidden; }
+  .teacher-photo { width: 100%; aspect-ratio: 4/5; object-fit: cover; background: var(--grey-light); }
+  .teacher-body { padding: 24px; }
+  .teacher-title { font-family: var(--font-slant); text-transform: uppercase; color: var(--red); font-weight: 700; font-size: .82rem; letter-spacing: .5px; }
+  .teacher-name { font-family: var(--font-display); text-transform: uppercase; font-size: 1.3rem; margin: 6px 0 4px; }
+  .teacher-location { color: var(--grey); font-size: .85rem; margin-bottom: 10px; }
+  .teacher-social { display: flex; gap: 8px; margin-top: 16px; }
+  .teacher-social a { width: 32px; height: 32px; border-radius: 50%; background: var(--black); display: flex; align-items: center; justify-content: center; color: #fff; transition: background .15s; }
+  .teacher-social a:hover { background: var(--red); }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<section class="hero" style="padding:80px 0 100px;">
+  <div class="wrap">
+    <div class="eyebrow">Transmission</div>
+    <h1>Nos <span class="accent">professeurs</span></h1>
+    <p class="lead">Les maîtres et professeurs de Capoeira em Ação France, en France et à travers le monde.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div id="teachers-list" class="grid grid-3">
+      <p style="color:var(--grey)">Chargement…</p>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/components.js"></script>
+<script>
+  renderHeader("professeurs.html");
+  renderFooter();
+
+  const iconStyle = "width:14px;height:14px;";
+
+  async function loadTeachers() {
+    const el = document.getElementById("teachers-list");
+    const { data, error } = await supabaseClient.from("teachers").select("*").order("name");
+    if (error || !data || data.length === 0) {
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">👤</div>Aucun professeur publié pour le moment.</div>`;
+      return;
+    }
+    el.innerHTML = data.map(t => {
+      const social = [
+        t.instagram_url ? `<a href="${t.instagram_url}" target="_blank" rel="noopener" aria-label="Instagram"><svg style="${iconStyle}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>` : "",
+        t.facebook_url ? `<a href="${t.facebook_url}" target="_blank" rel="noopener" aria-label="Facebook"><svg style="${iconStyle}" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg></a>` : "",
+        t.tiktok_url ? `<a href="${t.tiktok_url}" target="_blank" rel="noopener" aria-label="TikTok"><svg style="${iconStyle}" viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8a4.3 4.3 0 0 1-3.1-3.6V2h-3.4v13.7a2.6 2.6 0 1 1-1.8-2.5V9.7a5.9 5.9 0 1 0 5.2 5.9V9.5a7.6 7.6 0 0 0 4.4 1.4V7.5a4.3 4.3 0 0 1-1.3-1.7z"/></svg></a>` : "",
+      ].filter(Boolean).join("");
+
+      return `
+      <div class="teacher-card">
+        ${t.photo_url ? `<img src="${t.photo_url}" alt="${t.name}" class="teacher-photo">` : `<div class="teacher-photo"></div>`}
+        <div class="teacher-body">
+          ${t.title ? `<div class="teacher-title">${t.title}</div>` : ""}
+          <div class="teacher-name">${t.name}</div>
+          ${t.location ? `<div class="teacher-location">📍 ${t.location}</div>` : ""}
+          ${t.description ? `<p style="color:var(--grey);font-size:.9rem;">${t.description}</p>` : ""}
+          ${social ? `<div class="teacher-social">${social}</div>` : ""}
+        </div>
+      </div>`;
+    }).join("");
+  }
+  loadTeachers();
+  applyTranslations();
+</script>
+</body>
+</html>

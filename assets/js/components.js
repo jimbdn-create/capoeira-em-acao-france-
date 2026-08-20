@@ -3,6 +3,7 @@ function renderHeader(active) {
   const items = [
     ["index.html", "nav_home"],
     ["capoeira.html", "nav_capoeira"],
+    ["professeurs.html", "nav_teachers"],
     ["lieux.html", "nav_locations"],
     ["evenements.html", "nav_events"],
     ["galerie.html", "nav_gallery"],

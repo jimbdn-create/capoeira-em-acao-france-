@@ -3,7 +3,7 @@
 // ============================================
 const translations = {
   fr: {
-    nav_home: "Accueil", nav_capoeira: "La Capoeira", nav_locations: "Nos lieux",
+    nav_home: "Accueil", nav_capoeira: "La Capoeira", nav_teachers: "Professeurs", nav_locations: "Nos lieux",
     nav_events: "Événements", nav_gallery: "Galerie", nav_videos: "Vidéos",
     nav_songs: "Chansons", nav_courses: "Cours en ligne", nav_join: "Rejoindre un cours",
     footer_school: "École", footer_nav: "Navigation", footer_contact: "Contact",
@@ -51,7 +51,7 @@ const translations = {
     student_login: "Espace élève — Se connecter", pill_public: "Public", pill_reserved: "Réservé aux élèves",
   },
   en: {
-    nav_home: "Home", nav_capoeira: "Capoeira", nav_locations: "Our locations",
+    nav_home: "Home", nav_capoeira: "Capoeira", nav_teachers: "Teachers", nav_locations: "Our locations",
     nav_events: "Events", nav_gallery: "Gallery", nav_videos: "Videos",
     nav_songs: "Songs", nav_courses: "Online courses", nav_join: "Join a class",
     footer_school: "School", footer_nav: "Navigation", footer_contact: "Contact",
@@ -99,7 +99,7 @@ const translations = {
     student_login: "Student area — Log in", pill_public: "Public", pill_reserved: "Students only",
   },
   pt: {
-    nav_home: "Início", nav_capoeira: "A Capoeira", nav_locations: "Nossos locais",
+    nav_home: "Início", nav_capoeira: "A Capoeira", nav_teachers: "Professores", nav_locations: "Nossos locais",
     nav_events: "Eventos", nav_gallery: "Galeria", nav_videos: "Vídeos",
     nav_songs: "Músicas", nav_courses: "Aulas online", nav_join: "Entrar numa aula",
     footer_school: "Escola", footer_nav: "Navegação", footer_contact: "Contato",

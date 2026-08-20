@@ -49,6 +49,7 @@
     <button class="tab-btn" data-tab="videos">Galerie vidéos</button>
     <button class="tab-btn" data-tab="courses">Cours en ligne</button>
     <button class="tab-btn" data-tab="songs">Chansons</button>
+    <button class="tab-btn" data-tab="teachers">Professeurs</button>
     <button class="tab-btn" data-tab="students">Élèves inscrits</button>
     <button class="tab-btn" data-tab="stats">Statistiques</button>
     <button class="tab-btn" data-tab="content" style="margin-top:20px;">Page d'accueil</button>
@@ -271,6 +272,35 @@
           <h3>Chansons publiées</h3>
           <table class="admin-table"><thead><tr><th>Titre</th><th></th></tr></thead>
             <tbody id="songs-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFESSEURS -->
+    <section class="tab-panel" id="panel-teachers">
+      <div class="panel-cols">
+        <div class="box">
+          <h3 id="teacher-form-title">Ajouter un professeur</h3>
+          <form id="form-teacher">
+            <input type="hidden" id="tc-edit-id" value="">
+            <div class="form-field"><label>Nom</label><input type="text" id="tc-name" required></div>
+            <div class="form-field"><label>Titre / grade</label><input type="text" id="tc-title" placeholder="ex: Mestre, Contramestre, Professor"></div>
+            <div class="form-field"><label>Lieu / pays</label><input type="text" id="tc-location" placeholder="ex: Paris, France"></div>
+            <div class="form-field"><label>Description</label><textarea id="tc-description"></textarea></div>
+            <div class="form-field"><label>Photo (JPEG, GIF ou PDF) — laisse vide pour garder la photo actuelle</label><input type="file" id="tc-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="tc-photo-remove" style="width:auto;"> Retirer la photo actuelle (aucune photo)</label></div>
+            <div class="form-field"><label>Lien Instagram</label><input type="url" id="tc-instagram" placeholder="https://instagram.com/..."></div>
+            <div class="form-field"><label>Lien Facebook</label><input type="url" id="tc-facebook" placeholder="https://facebook.com/..."></div>
+            <div class="form-field"><label>Lien TikTok</label><input type="url" id="tc-tiktok" placeholder="https://tiktok.com/..."></div>
+            <button type="submit" id="tc-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="button" id="tc-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
+          </form>
+        </div>
+        <div class="box">
+          <h3>Professeurs publiés</h3>
+          <table class="admin-table"><thead><tr><th>Nom</th><th>Titre</th><th></th></tr></thead>
+            <tbody id="teachers-table"></tbody>
           </table>
         </div>
       </div>
@@ -1178,6 +1208,79 @@
     loadSongs();
   });
 
+  // --- PROFESSEURS ---
+  let teachersCache = [];
+  async function loadTeachers() {
+    const { data } = await supabaseClient.from("teachers").select("*").order("name");
+    teachersCache = data || [];
+    document.getElementById("teachers-table").innerHTML = teachersCache.map(t => `
+      <tr><td>${t.name}</td><td>${t.title || "—"}</td>
+      <td class="row-actions">
+        <button onclick="editTeacher('${t.id}')">Modifier</button>
+        <button onclick="deleteRow('teachers','${t.id}', loadTeachers)">Supprimer</button>
+      </td></tr>
+    `).join("") || `<tr><td colspan="3">Aucun professeur.</td></tr>`;
+  }
+
+  function editTeacher(id) {
+    const t = teachersCache.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById("tc-edit-id").value = t.id;
+    document.getElementById("tc-name").value = t.name || "";
+    document.getElementById("tc-title").value = t.title || "";
+    document.getElementById("tc-location").value = t.location || "";
+    document.getElementById("tc-description").value = t.description || "";
+    document.getElementById("tc-instagram").value = t.instagram_url || "";
+    document.getElementById("tc-facebook").value = t.facebook_url || "";
+    document.getElementById("tc-tiktok").value = t.tiktok_url || "";
+    document.getElementById("teacher-form-title").textContent = "Modifier le professeur";
+    document.getElementById("tc-submit-btn").textContent = "Enregistrer les modifications";
+    document.getElementById("tc-cancel-btn").style.display = "block";
+    document.getElementById("panel-teachers").scrollIntoView({ behavior: "smooth" });
+  }
+
+  document.getElementById("tc-cancel-btn").addEventListener("click", () => {
+    document.getElementById("form-teacher").reset();
+    document.getElementById("tc-edit-id").value = "";
+    document.getElementById("teacher-form-title").textContent = "Ajouter un professeur";
+    document.getElementById("tc-submit-btn").textContent = "Ajouter";
+    document.getElementById("tc-cancel-btn").style.display = "none";
+  });
+
+  document.getElementById("form-teacher").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const editId = document.getElementById("tc-edit-id").value;
+    let photoUrl = null;
+    try {
+      photoUrl = await uploadFileIfAny(document.getElementById("tc-photo"), "teachers");
+    } catch (err) {
+      alert(err.message);
+      return;
+    }
+    const payload = {
+      name: document.getElementById("tc-name").value,
+      title: document.getElementById("tc-title").value,
+      location: document.getElementById("tc-location").value,
+      description: document.getElementById("tc-description").value,
+      instagram_url: document.getElementById("tc-instagram").value || null,
+      facebook_url: document.getElementById("tc-facebook").value || null,
+      tiktok_url: document.getElementById("tc-tiktok").value || null,
+    };
+    if (photoUrl) payload.photo_url = photoUrl;
+    else if (document.getElementById("tc-photo-remove").checked) payload.photo_url = null;
+
+    const { error } = editId
+      ? await supabaseClient.from("teachers").update(payload).eq("id", editId)
+      : await supabaseClient.from("teachers").insert({ ...payload, photo_url: photoUrl });
+    if (error) { alert("Erreur : " + error.message); console.error(error); return; }
+    e.target.reset();
+    document.getElementById("tc-edit-id").value = "";
+    document.getElementById("teacher-form-title").textContent = "Ajouter un professeur";
+    document.getElementById("tc-submit-btn").textContent = "Ajouter";
+    document.getElementById("tc-cancel-btn").style.display = "none";
+    loadTeachers();
+  });
+
   // --- MON COMPTE : changement de mot de passe ---
   document.getElementById("form-password").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -1212,6 +1315,7 @@
   loadVideos();
   loadCourses();
   loadSongs();
+  loadTeachers();
   loadStudents();
   loadInvites();
   loadStats();
