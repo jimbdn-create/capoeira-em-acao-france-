@@ -6,9 +6,7 @@ function renderHeader(active) {
     ["professeurs.html", "nav_teachers"],
     ["lieux.html", "nav_locations"],
     ["evenements.html", "nav_events"],
-    ["galerie.html", "nav_gallery"],
-    ["videos.html", "nav_videos"],
-    ["chansons.html", "nav_songs"],
+    ["medias.html", "nav_media"],
     ["cours-en-ligne.html", "nav_courses"],
   ];
   const links = items.map(([href, key]) =>
@@ -61,15 +59,16 @@ function renderFooter() {
           <div>
             <h4 data-i18n="footer_nav">Navigation</h4>
             <a href="capoeira.html" data-i18n="nav_capoeira">La Capoeira</a>
+            <a href="professeurs.html" data-i18n="nav_teachers">Professeurs</a>
             <a href="lieux.html" data-i18n="nav_locations">Nos lieux</a>
             <a href="evenements.html" data-i18n="nav_events">Événements</a>
-            <a href="galerie.html" data-i18n="nav_gallery">Galerie</a>
           </div>
           <div>
             <h4 data-i18n="footer_school">École</h4>
-            <a href="videos.html" data-i18n="nav_videos">Vidéos</a>
+            <a href="medias.html#photos">Galerie photos</a>
+            <a href="medias.html#videos">Vidéos</a>
+            <a href="medias.html#songs">Chansons</a>
             <a href="cours-en-ligne.html" data-i18n="nav_courses">Cours en ligne</a>
-            <a href="chansons.html" data-i18n="nav_songs">Chansons</a>
           </div>
           <div>
             <h4 data-i18n="footer_contact">Contact</h4>

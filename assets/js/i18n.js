@@ -4,7 +4,7 @@
 const translations = {
   fr: {
     nav_home: "Accueil", nav_capoeira: "La Capoeira", nav_teachers: "Professeurs", nav_locations: "Nos lieux",
-    nav_events: "Événements", nav_gallery: "Galerie", nav_videos: "Vidéos",
+    nav_events: "Événements", nav_media: "Médias", nav_gallery: "Galerie", nav_videos: "Vidéos",
     nav_songs: "Chansons", nav_courses: "Cours en ligne", nav_join: "Rejoindre un cours",
     footer_school: "École", footer_nav: "Navigation", footer_contact: "Contact",
     footer_admin: "Espace admin", footer_desc: "École de Capoeira affiliée à l'académie internationale du Mestre Cascavel. Cours, stages et événements en Île-de-France et à Aix-en-Provence.",
@@ -52,7 +52,7 @@ const translations = {
   },
   en: {
     nav_home: "Home", nav_capoeira: "Capoeira", nav_teachers: "Teachers", nav_locations: "Our locations",
-    nav_events: "Events", nav_gallery: "Gallery", nav_videos: "Videos",
+    nav_events: "Events", nav_media: "Media", nav_gallery: "Gallery", nav_videos: "Videos",
     nav_songs: "Songs", nav_courses: "Online courses", nav_join: "Join a class",
     footer_school: "School", footer_nav: "Navigation", footer_contact: "Contact",
     footer_admin: "Admin area", footer_desc: "Capoeira school affiliated with Mestre Cascavel's international academy. Classes, workshops and events across the Paris region and Aix-en-Provence.",
@@ -100,7 +100,7 @@ const translations = {
   },
   pt: {
     nav_home: "Início", nav_capoeira: "A Capoeira", nav_teachers: "Professores", nav_locations: "Nossos locais",
-    nav_events: "Eventos", nav_gallery: "Galeria", nav_videos: "Vídeos",
+    nav_events: "Eventos", nav_media: "Mídia", nav_gallery: "Galeria", nav_videos: "Vídeos",
     nav_songs: "Músicas", nav_courses: "Aulas online", nav_join: "Entrar numa aula",
     footer_school: "Escola", footer_nav: "Navegação", footer_contact: "Contato",
     footer_admin: "Área admin", footer_desc: "Escola de Capoeira afiliada à academia internacional do Mestre Cascavel. Aulas, workshops e eventos na região de Paris e em Aix-en-Provence.",
