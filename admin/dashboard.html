@@ -99,8 +99,11 @@
             <input type="hidden" id="sl-edit-id" value="">
             <div class="form-field"><label>Lieu</label><select id="sl-location" required></select></div>
             <div class="form-field"><label>Horaire</label><input type="text" id="sl-schedule" placeholder="ex: Lundi 19h-20h30" required></div>
+            <div class="form-field"><label>Adresse du gymnase (si différente de l'adresse générale du lieu)</label><input type="text" id="sl-address" placeholder="ex: Gymnase X, 12 rue..."></div>
             <div class="form-field"><label>Professeur</label><input type="text" id="sl-teacher"></div>
             <div class="form-field"><label>Notes (âge, niveau...)</label><input type="text" id="sl-notes" placeholder="ex: Cours enfants 5-13 ans"></div>
+            <div class="form-field"><label>Photo du gymnase (JPEG, GIF ou PDF) — laisse vide pour garder l'actuelle</label><input type="file" id="sl-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
+            <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="sl-photo-remove" style="width:auto;"> Retirer la photo actuelle (aucune photo)</label></div>
             <button type="submit" id="sl-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
             <button type="button" id="sl-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
           </form>
@@ -512,6 +515,7 @@
     document.getElementById("sl-edit-id").value = s.id;
     document.getElementById("sl-location").value = s.location_id || "";
     document.getElementById("sl-schedule").value = s.schedule || "";
+    document.getElementById("sl-address").value = s.address || "";
     document.getElementById("sl-teacher").value = s.teacher_name || "";
     document.getElementById("sl-notes").value = s.notes || "";
     document.getElementById("slot-form-title").textContent = "Modifier le créneau";
@@ -531,12 +535,23 @@
   document.getElementById("form-slot").addEventListener("submit", async (e) => {
     e.preventDefault();
     const editId = document.getElementById("sl-edit-id").value;
+    let photoUrl = null;
+    try {
+      photoUrl = await uploadFileIfAny(document.getElementById("sl-photo"), "slots");
+    } catch (err) {
+      alert(err.message);
+      return;
+    }
     const payload = {
       location_id: document.getElementById("sl-location").value,
       schedule: document.getElementById("sl-schedule").value,
+      address: document.getElementById("sl-address").value || null,
       teacher_name: document.getElementById("sl-teacher").value,
       notes: document.getElementById("sl-notes").value,
     };
+    if (photoUrl) payload.image_url = photoUrl;
+    else if (document.getElementById("sl-photo-remove").checked) payload.image_url = null;
+
     const { error } = editId
       ? await supabaseClient.from("course_slots").update(payload).eq("id", editId)
       : await supabaseClient.from("course_slots").insert(payload);

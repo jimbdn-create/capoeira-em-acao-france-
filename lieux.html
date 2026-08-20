@@ -7,6 +7,17 @@
 <link rel="icon" href="assets/img/logo-badge.png">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
+  .carousel { position: relative; aspect-ratio: 16/10; overflow: hidden; background: #221f1e; }
+  .carousel-slide { position: absolute; inset: 0; opacity: 0; transition: opacity .35s ease; }
+  .carousel-slide.active { opacity: 1; }
+  .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+  .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,.55); color: #fff; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; z-index: 2; }
+  .carousel-nav.prev { left: 10px; }
+  .carousel-nav.next { right: 10px; }
+  .carousel-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 2; }
+  .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.5); border: none; cursor: pointer; padding: 0; }
+  .carousel-dot.active { background: var(--red); }
+  .carousel-caption { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 14px; background: linear-gradient(transparent, rgba(0,0,0,.8)); color: #fff; font-family: var(--font-slant); font-size: .85rem; text-transform: uppercase; z-index: 1; }
   .slots-table { width: 100%; border-collapse: collapse; margin-top: 18px; }
   .slots-table th { text-align: left; font-family: var(--font-slant); text-transform: uppercase; font-size: .78rem; color: #cfcac6; padding: 8px 10px; border-bottom: 1px solid #3a3735; }
   .slots-table td { padding: 10px; border-bottom: 1px solid #2c2a29; font-size: .9rem; color: var(--white); }
@@ -41,6 +52,23 @@
   renderHeader("lieux.html");
   renderFooter();
 
+  function goToSlide(cardId, index) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    const slides = card.querySelectorAll(".carousel-slide");
+    const dots = card.querySelectorAll(".carousel-dot");
+    const total = slides.length;
+    const i = ((index % total) + total) % total;
+    slides.forEach((s, n) => s.classList.toggle("active", n === i));
+    dots.forEach((d, n) => d.classList.toggle("active", n === i));
+    card.dataset.current = i;
+  }
+  function shiftSlide(cardId, delta) {
+    const card = document.getElementById(cardId);
+    const current = parseInt(card.dataset.current || "0", 10);
+    goToSlide(cardId, current + delta);
+  }
+
   async function loadLocations() {
     const el = document.getElementById("locations-list");
     const { data, error } = await supabaseClient
@@ -52,7 +80,8 @@
       return;
     }
     const t = translations[getCurrentLang()] || translations.fr;
-    el.innerHTML = data.map(loc => {
+    el.innerHTML = data.map((loc, locIndex) => {
+      const cardId = `loc-card-${locIndex}`;
       const contacts = [
         loc.contact_whatsapp ? `<a href="https://wa.me/${loc.contact_whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent('Bonjour, je souhaite rejoindre le cours de capoeira à ' + loc.name)}" target="_blank" rel="noopener" class="btn btn-red" style="padding:10px 20px;font-size:.85rem;">${t.btn_whatsapp}</a>` : "",
         loc.contact_email ? `<a href="mailto:${loc.contact_email}?subject=${encodeURIComponent('Inscription cours de capoeira - ' + loc.name)}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">${t.btn_email}</a>` : "",
@@ -60,13 +89,41 @@
       ].filter(Boolean).join(" ");
 
       const slots = (loc.course_slots || []).sort((a, b) => (a.schedule || "").localeCompare(b.schedule || ""));
+
+      // Construit la liste des photos du carrousel : photo du site + photo de chaque créneau qui en a une
+      const slides = [];
+      if (loc.image_url && !loc.image_url.toLowerCase().endsWith('.pdf')) {
+        slides.push({ img: loc.image_url, caption: loc.name });
+      }
+      slots.forEach(s => {
+        if (s.image_url && !s.image_url.toLowerCase().endsWith('.pdf')) {
+          slides.push({ img: s.image_url, caption: s.schedule || loc.name });
+        }
+      });
+      if (slides.length === 0) slides.push(null); // pas de photo du tout
+
+      const carouselHtml = slides[0] === null ? "" : `
+        <div class="carousel" id="${cardId}" data-current="0">
+          ${slides.map((s, i) => `
+            <div class="carousel-slide ${i === 0 ? 'active' : ''}">
+              <img src="${s.img}" alt="${s.caption}">
+              <div class="carousel-caption">${s.caption}</div>
+            </div>`).join("")}
+          ${slides.length > 1 ? `
+            <button class="carousel-nav prev" onclick="shiftSlide('${cardId}', -1)">&#8249;</button>
+            <button class="carousel-nav next" onclick="shiftSlide('${cardId}', 1)">&#8250;</button>
+            <div class="carousel-dots">
+              ${slides.map((_, i) => `<button class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide('${cardId}', ${i})"></button>`).join("")}
+            </div>` : ""}
+        </div>`;
+
       const slotsTable = slots.length ? `
         <table class="slots-table">
           <thead><tr><th>Horaire</th><th>Professeur</th><th>Notes</th></tr></thead>
           <tbody>
             ${slots.map(s => `
               <tr>
-                <td>${s.schedule || "—"}</td>
+                <td>${s.schedule || "—"}${s.address ? `<br><span style="color:#9c9793;font-size:.8rem;">${s.address}</span>` : ""}</td>
                 <td>${s.teacher_name || "—"}</td>
                 <td>${s.notes || "—"}</td>
               </tr>`).join("")}
@@ -75,11 +132,7 @@
 
       return `
       <div class="location-card" style="padding:0;overflow:hidden;">
-        ${loc.image_url ? (
-          loc.image_url.toLowerCase().endsWith('.pdf')
-            ? `<a href="${loc.image_url}" target="_blank" rel="noopener" style="display:block;padding:14px 20px;background:#221f1e;color:var(--red);font-family:var(--font-slant);text-transform:uppercase;font-size:.85rem;">📄 Voir le document</a>`
-            : `<img src="${loc.image_url}" alt="${loc.name}" style="width:100%;aspect-ratio:16/10;object-fit:cover;">`
-        ) : ""}
+        ${carouselHtml}
         <div style="padding:32px;">
           <div class="tag">Lieu de cours</div>
           <h3>${loc.name}</h3>
