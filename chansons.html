@@ -27,9 +27,9 @@
 
 <section class="hero" style="padding:80px 0 100px;">
   <div class="wrap">
-    <div class="eyebrow">Musicalité</div>
-    <h1>Chansons <span class="accent">de Capoeira</span></h1>
-    <p class="lead">Paroles, traduction en français, et un lien pour apprendre à les chanter.</p>
+    <div class="eyebrow" data-i18n="page_songs_eyebrow">Musicalité</div>
+    <h1><span data-i18n="page_songs_title1">Chansons</span> <span class="accent" data-i18n="page_songs_title_accent">de Capoeira</span></h1>
+    <p class="lead" data-i18n="page_songs_lead">Paroles, traduction en français, et un lien pour apprendre à les chanter.</p>
   </div>
 </section>
 
@@ -60,8 +60,9 @@
   async function loadSongs() {
     const el = document.getElementById("songs-list");
     const { data, error } = await supabaseClient.from("songs").select("*").order("title");
+    const t = translations[getCurrentLang()] || translations.fr;
     if (error || !data || data.length === 0) {
-      el.innerHTML = `<div class="empty-state"><div class="icon">🎵</div>Aucune chanson publiée pour le moment.</div>`;
+      el.innerHTML = `<div class="empty-state"><div class="icon">🎵</div>${t.empty_songs}</div>`;
       return;
     }
     el.innerHTML = data.map(s => {
@@ -78,11 +79,11 @@
           <div class="song-body">
             <div class="lyrics-cols">
               <div>
-                <h4>Paroles</h4>
+                <h4>${t.label_lyrics}</h4>
                 <pre>${s.lyrics_original || "—"}</pre>
               </div>
               <div>
-                <h4>Traduction française</h4>
+                <h4>${t.label_translation}</h4>
                 <pre>${s.lyrics_translation || "—"}</pre>
               </div>
             </div>
@@ -92,6 +93,7 @@
     }).join("");
   }
   loadSongs();
+  applyTranslations();
 </script>
 </body>
 </html>
