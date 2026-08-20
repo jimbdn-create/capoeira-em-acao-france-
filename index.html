@@ -7,6 +7,16 @@
 <meta name="description" content="École de Capoeira em Ação France, affiliée à Mestre Cascavel. Cours, stages et événements à Longjumeau, Paris 13e, Cergy-le-Haut, Les Lilas et Aix-en-Provence.">
 <link rel="icon" href="assets/img/logo-badge.png">
 <link rel="stylesheet" href="assets/css/style.css">
+<script type="application/ld+json" id="seo-schema">
+{
+  "@context": "https://schema.org",
+  "@type": "SportsActivityLocation",
+  "name": "Capoeira em Ação France",
+  "description": "École de Capoeira affiliée à l'académie internationale du Mestre Cascavel. Cours, stages et événements en Île-de-France et à Aix-en-Provence.",
+  "url": "https://jimbdn-create.github.io/capoeira-em-acao-france-/",
+  "sameAs": []
+}
+</script>
 </head>
 <body>
 
@@ -125,6 +135,20 @@
     });
   }
   loadSiteContent();
+
+  // Complète le balisage SEO avec les vrais liens sociaux (aide le référencement)
+  supabaseClient.from("site_content").select("key, value").in("key", ["social_instagram_url", "social_facebook_url", "social_tiktok_url"]).then(({ data }) => {
+    if (!data) return;
+    const links = data.map(r => r.value).filter(Boolean);
+    if (links.length === 0) return;
+    const schemaEl = document.getElementById("seo-schema");
+    if (!schemaEl) return;
+    try {
+      const schema = JSON.parse(schemaEl.textContent);
+      schema.sameAs = links;
+      schemaEl.textContent = JSON.stringify(schema);
+    } catch (e) {}
+  });
 
   async function loadLocationsPreview() {
     const el = document.getElementById("locations-preview");

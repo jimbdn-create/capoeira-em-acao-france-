@@ -55,6 +55,7 @@ function renderFooter() {
               École de Capoeira affiliée à l'académie internationale du Mestre Cascavel.
               Cours, stages et événements en Île-de-France et à Aix-en-Provence.
             </p>
+            <div id="footer-social" style="display:flex;gap:12px;margin-top:16px;"></div>
           </div>
           <div>
             <h4 data-i18n="footer_nav">Navigation</h4>
@@ -85,7 +86,10 @@ function renderFooter() {
 
   // Charge l'email/téléphone de contact général depuis le contenu du site (modifiable dans le dashboard admin)
   if (typeof supabaseClient !== "undefined") {
-    supabaseClient.from("site_content").select("key, value").in("key", ["contact_general_email", "contact_general_phone", "cotisation_url"]).then(({ data }) => {
+    supabaseClient.from("site_content").select("key, value").in("key", [
+      "contact_general_email", "contact_general_phone", "cotisation_url",
+      "social_instagram_url", "social_facebook_url", "social_tiktok_url"
+    ]).then(({ data }) => {
       const el = document.getElementById("footer-contact");
       if (!el || !data) return;
       const email = data.find(r => r.key === "contact_general_email")?.value;
@@ -100,6 +104,20 @@ function renderFooter() {
       if (cotisationEl && cotisationUrl) {
         cotisationEl.innerHTML = `<a href="${cotisationUrl}" target="_blank" rel="noopener" style="color:var(--red);font-weight:600;">Payer ma cotisation ↗</a>`;
       }
+
+      const instaUrl = data.find(r => r.key === "social_instagram_url")?.value;
+      const fbUrl = data.find(r => r.key === "social_facebook_url")?.value;
+      const tiktokUrl = data.find(r => r.key === "social_tiktok_url")?.value;
+      const socialEl = document.getElementById("footer-social");
+      if (socialEl) {
+        const iconStyle = "width:34px;height:34px;border-radius:50%;background:#221f1e;display:flex;align-items:center;justify-content:center;color:#fff;transition:background .15s;";
+        let socialHtml = "";
+        if (instaUrl) socialHtml += `<a href="${instaUrl}" target="_blank" rel="noopener" aria-label="Instagram" style="${iconStyle}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>`;
+        if (fbUrl) socialHtml += `<a href="${fbUrl}" target="_blank" rel="noopener" aria-label="Facebook" style="${iconStyle}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg></a>`;
+        if (tiktokUrl) socialHtml += `<a href="${tiktokUrl}" target="_blank" rel="noopener" aria-label="TikTok" style="${iconStyle}"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8a4.3 4.3 0 0 1-3.1-3.6V2h-3.4v13.7a2.6 2.6 0 1 1-1.8-2.5V9.7a5.9 5.9 0 1 0 5.2 5.9V9.5a7.6 7.6 0 0 0 4.4 1.4V7.5a4.3 4.3 0 0 1-1.3-1.7z"/></svg></a>`;
+        socialEl.innerHTML = socialHtml;
+      }
+
       if (typeof applyTranslations === "function") applyTranslations();
     });
   }
