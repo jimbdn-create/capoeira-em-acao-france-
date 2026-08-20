@@ -6,6 +6,29 @@
 <title>Événements & stages — Capoeira em Ação France</title>
 <link rel="icon" href="assets/img/logo-badge.png">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .cal-header h3 { font-family:var(--font-slant); text-transform:uppercase; font-size:1.3rem; margin:0; }
+  .cal-nav-btn { background:none; border:1px solid var(--grey-line); width:36px; height:36px; border-radius:var(--radius); cursor:pointer; font-size:1.1rem; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+  .cal-daylabel { text-align:center; font-family:var(--font-slant); text-transform:uppercase; font-size:.75rem; color:var(--grey); padding:6px 0; }
+  .cal-cell { min-height:76px; border:1px solid var(--grey-line); border-radius:var(--radius); padding:6px; position:relative; }
+  .cal-cell.empty { border:none; }
+  .cal-daynum { font-size:.8rem; color:var(--grey); margin-bottom:4px; }
+  .cal-dot { display:block; width:100%; text-align:left; background:var(--red); color:var(--white); border:none; border-radius:3px; padding:2px 5px; font-size:.68rem; margin-bottom:3px; cursor:pointer; font-family:var(--font-slant); text-transform:uppercase; line-height:1.3; }
+  .cal-dot.type-cours { background:var(--black); }
+  .cal-dot.type-batizado { background:#8a6d00; }
+  .cal-dot.type-rencontre_internationale { background:#1d5c8a; }
+  .cal-legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:18px; font-size:.82rem; color:var(--grey); }
+  .cal-legend span { display:flex; align-items:center; gap:6px; }
+  .cal-legend i { width:10px; height:10px; border-radius:2px; display:inline-block; }
+  .event-modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:500; padding:20px; }
+  .event-modal-backdrop.open { display:flex; }
+  .event-modal { background:var(--white); max-width:480px; width:100%; max-height:85vh; overflow-y:auto; border-radius:var(--radius); }
+  .event-modal img { width:100%; aspect-ratio:16/9; object-fit:cover; }
+  .event-modal-body { padding:28px; }
+  .event-modal-close { position:absolute; top:12px; right:16px; background:none; border:none; font-size:1.6rem; color:var(--white); cursor:pointer; z-index:2; }
+</style>
 </head>
 <body>
 <div id="site-header"></div>
@@ -20,11 +43,28 @@
 
 <section>
   <div class="wrap">
-    <div id="events-list" class="grid grid-2">
-      <p style="color:var(--grey)" data-i18n="loading_generic">Chargement…</p>
+    <div class="cal-header">
+      <button class="cal-nav-btn" id="cal-prev">&#8249;</button>
+      <h3 id="cal-title">—</h3>
+      <button class="cal-nav-btn" id="cal-next">&#8250;</button>
+    </div>
+    <div class="cal-grid" id="cal-daylabels"></div>
+    <div class="cal-grid" id="cal-grid" style="margin-top:6px;"></div>
+    <div class="cal-legend">
+      <span><i style="background:var(--black);"></i>Cours</span>
+      <span><i style="background:var(--red);"></i>Stage</span>
+      <span><i style="background:#8a6d00;"></i>Batizado</span>
+      <span><i style="background:#1d5c8a;"></i>Rencontre internationale</span>
     </div>
   </div>
 </section>
+
+<div class="event-modal-backdrop" id="event-modal-backdrop">
+  <div class="event-modal" id="event-modal" style="position:relative;">
+    <button class="event-modal-close" id="event-modal-close">&times;</button>
+    <div id="event-modal-content"></div>
+  </div>
+</div>
 
 <div id="site-footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -38,49 +78,108 @@
   function eventTypeLabel(type) {
     return { cours: "Cours", stage: "Stage", batizado: "Batizado", rencontre_internationale: "Rencontre internationale" }[type] || type;
   }
-
   function toEmbedUrl(url) {
     const yt = url && url.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=)([\w-]+)/);
     if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
     return url;
   }
 
+  let allEvents = [];
+  let viewDate = new Date();
+  viewDate.setDate(1);
+
   async function loadEvents() {
-    const el = document.getElementById("events-list");
-    const { data, error } = await supabaseClient
-      .from("events").select("*, locations(name)")
-      .order("event_date", { ascending: true });
-    if (error || !data || data.length === 0) {
-      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">📅</div>${(translations[getCurrentLang()]||translations.fr).empty_events}</div>`;
-      return;
-    }
-    el.innerHTML = data.map(ev => {
-      const d = new Date(ev.event_date);
-      const lieu = ev.locations ? ev.locations.name : (ev.location_other || "");
-      const dateLabel = ev.end_date
-        ? `${d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' })} → ${new Date(ev.end_date).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' })}`
-        : d.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
-
-      const links = [
-        ev.instagram_url ? `<a href="${ev.instagram_url}" target="_blank" rel="noopener" class="btn btn-outline-dark" style="padding:6px 14px;font-size:.8rem;">Instagram</a>` : "",
-        ev.facebook_url ? `<a href="${ev.facebook_url}" target="_blank" rel="noopener" class="btn btn-outline-dark" style="padding:6px 14px;font-size:.8rem;">Facebook</a>` : "",
-      ].join(" ");
-
-      return `
-        <div class="card" style="padding:0;overflow:hidden;">
-          ${ev.image_url ? `<img src="${ev.image_url}" alt="${ev.title}" style="width:100%;aspect-ratio:16/9;object-fit:cover;">` : ""}
-          ${ev.video_url ? `<iframe src="${toEmbedUrl(ev.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : ""}
-          <div style="padding:24px;">
-            <span class="badge-type" style="margin-left:0;">${eventTypeLabel(ev.event_type)}</span>
-            <h3 style="font-family:var(--font-slant);font-weight:700;text-transform:uppercase;font-size:1.3rem;margin:10px 0 6px;">${ev.title}</h3>
-            <div style="color:var(--red);font-weight:600;font-size:.9rem;">${dateLabel}</div>
-            ${lieu ? `<div style="color:var(--grey);font-size:.9rem;margin-top:2px;">📍 ${lieu}</div>` : ""}
-            ${ev.description ? `<p style="margin-top:10px;">${ev.description}</p>` : ""}
-            ${links ? `<div style="margin-top:14px;">${links}</div>` : ""}
-          </div>
-        </div>`;
-    }).join("");
+    const { data } = await supabaseClient.from("events").select("*, locations(name)").order("event_date");
+    allEvents = data || [];
+    renderCalendar();
   }
+
+  function renderCalendar() {
+    const monthNames = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+    document.getElementById("cal-title").textContent = `${monthNames[viewDate.getMonth()]} ${viewDate.getFullYear()}`;
+
+    document.getElementById("cal-daylabels").innerHTML = ["L","M","M","J","V","S","D"].map(d => `<div class="cal-daylabel">${d}</div>`).join("");
+
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const startOffset = (firstDay.getDay() + 6) % 7; // lundi = 0
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const eventsByDay = {};
+    allEvents.forEach(ev => {
+      const d = new Date(ev.event_date);
+      const endD = ev.end_date ? new Date(ev.end_date) : d;
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        // Ajoute l'événement à chaque jour de sa période (dans le mois affiché)
+        const startDay = d.getDate();
+        const endDay = (endD.getMonth() === month) ? endD.getDate() : daysInMonth;
+        for (let day = startDay; day <= endDay; day++) {
+          eventsByDay[day] = eventsByDay[day] || [];
+          eventsByDay[day].push(ev);
+        }
+      }
+    });
+
+    let cells = "";
+    for (let i = 0; i < startOffset; i++) cells += `<div class="cal-cell empty"></div>`;
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayEvents = eventsByDay[day] || [];
+      cells += `
+        <div class="cal-cell">
+          <div class="cal-daynum">${day}</div>
+          ${dayEvents.map(ev => `<button class="cal-dot type-${ev.event_type}" onclick="openEventModal('${ev.id}')">${ev.title}</button>`).join("")}
+        </div>`;
+    }
+    document.getElementById("cal-grid").innerHTML = cells;
+  }
+
+  function openEventModal(id) {
+    const ev = allEvents.find(e => e.id === id);
+    if (!ev) return;
+    const lieu = ev.locations ? ev.locations.name : (ev.location_other || "");
+    const d = new Date(ev.event_date);
+    const dateLabel = ev.end_date
+      ? `${d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' })} → ${new Date(ev.end_date).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' })}`
+      : d.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+    const links = [
+      ev.instagram_url ? `<a href="${ev.instagram_url}" target="_blank" rel="noopener" class="btn btn-outline-dark" style="padding:8px 16px;font-size:.8rem;">Instagram</a>` : "",
+      ev.facebook_url ? `<a href="${ev.facebook_url}" target="_blank" rel="noopener" class="btn btn-outline-dark" style="padding:8px 16px;font-size:.8rem;">Facebook</a>` : "",
+    ].join(" ");
+
+    document.getElementById("event-modal-content").innerHTML = `
+      ${ev.image_url && !ev.image_url.toLowerCase().endsWith('.pdf') ? `<img src="${ev.image_url}" alt="${ev.title}">` : ""}
+      ${ev.video_url ? `<iframe src="${toEmbedUrl(ev.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : ""}
+      <div class="event-modal-body">
+        <span class="badge-type" style="margin-left:0;">${eventTypeLabel(ev.event_type)}</span>
+        <h2 style="font-family:var(--font-display);text-transform:uppercase;font-size:1.5rem;margin:10px 0 6px;">${ev.title}</h2>
+        <div style="color:var(--red);font-weight:600;font-size:.9rem;">${dateLabel}</div>
+        ${lieu ? `<div style="color:var(--grey);font-size:.9rem;margin-top:2px;">📍 ${lieu}</div>` : ""}
+        ${ev.description ? `<p style="margin-top:14px;">${ev.description}</p>` : ""}
+        ${links ? `<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">${links}</div>` : ""}
+        ${ev.registration_url ? `<a href="${ev.registration_url}" target="_blank" rel="noopener" class="btn btn-red" style="width:100%;text-align:center;margin-top:22px;">S'inscrire / Réserver ma place</a>` : ""}
+      </div>
+    `;
+    document.getElementById("event-modal-backdrop").classList.add("open");
+  }
+
+  document.getElementById("event-modal-close").addEventListener("click", () => {
+    document.getElementById("event-modal-backdrop").classList.remove("open");
+  });
+  document.getElementById("event-modal-backdrop").addEventListener("click", (e) => {
+    if (e.target.id === "event-modal-backdrop") document.getElementById("event-modal-backdrop").classList.remove("open");
+  });
+
+  document.getElementById("cal-prev").addEventListener("click", () => {
+    viewDate.setMonth(viewDate.getMonth() - 1);
+    renderCalendar();
+  });
+  document.getElementById("cal-next").addEventListener("click", () => {
+    viewDate.setMonth(viewDate.getMonth() + 1);
+    renderCalendar();
+  });
+
   loadEvents();
   applyTranslations();
 </script>

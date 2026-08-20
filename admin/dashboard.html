@@ -155,6 +155,7 @@
             <div class="form-field"><label>Vidéo (URL YouTube)</label><input type="url" id="ev-video" placeholder="https://youtube.com/..."></div>
             <div class="form-field"><label>Lien Instagram</label><input type="url" id="ev-instagram" placeholder="https://instagram.com/..."></div>
             <div class="form-field"><label>Lien Facebook</label><input type="url" id="ev-facebook" placeholder="https://facebook.com/..."></div>
+            <div class="form-field"><label>Lien d'inscription / réservation (HelloAsso, Google Form...)</label><input type="url" id="ev-registration" placeholder="https://..."></div>
 
             <button type="submit" id="ev-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
             <button type="button" id="ev-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
@@ -627,6 +628,7 @@
     document.getElementById("ev-video").value = ev.video_url || "";
     document.getElementById("ev-instagram").value = ev.instagram_url || "";
     document.getElementById("ev-facebook").value = ev.facebook_url || "";
+    document.getElementById("ev-registration").value = ev.registration_url || "";
     document.getElementById("event-form-title").textContent = "Modifier l'événement";
     document.getElementById("ev-submit-btn").textContent = "Enregistrer les modifications";
     document.getElementById("ev-cancel-btn").style.display = "block";
@@ -679,6 +681,7 @@
       video_url: document.getElementById("ev-video").value || null,
       instagram_url: document.getElementById("ev-instagram").value || null,
       facebook_url: document.getElementById("ev-facebook").value || null,
+      registration_url: document.getElementById("ev-registration").value || null,
     };
     if (imageUrl) payload.image_url = imageUrl;
     else if (document.getElementById("ev-image-remove").checked) payload.image_url = null;
