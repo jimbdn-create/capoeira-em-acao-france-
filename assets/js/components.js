@@ -1,18 +1,17 @@
 // Header et footer partagés, injectés dans #site-header / #site-footer
 function renderHeader(active) {
   const items = [
-    ["lieux.html", "Rejoindre un cours"],
-    ["index.html", "Accueil"],
-    ["capoeira.html", "La Capoeira"],
-    ["lieux.html", "Nos lieux"],
-    ["evenements.html", "Événements"],
-    ["galerie.html", "Galerie"],
-    ["videos.html", "Vidéos"],
-    ["chansons.html", "Chansons"],
-    ["cours-en-ligne.html", "Cours en ligne"],
+    ["index.html", "nav_home"],
+    ["capoeira.html", "nav_capoeira"],
+    ["lieux.html", "nav_locations"],
+    ["evenements.html", "nav_events"],
+    ["galerie.html", "nav_gallery"],
+    ["videos.html", "nav_videos"],
+    ["chansons.html", "nav_songs"],
+    ["cours-en-ligne.html", "nav_courses"],
   ];
-  const links = items.map(([href, label]) =>
-    `<a href="${href}" class="${active === href ? 'active' : ''}">${label}</a>`
+  const links = items.map(([href, key]) =>
+    `<a href="${href}" data-i18n="${key}" class="${active === href ? 'active' : ''}"></a>`
   ).join("") + `<a href="#" id="nav-teampulse" style="display:none;" target="_blank" rel="noopener">Espace membres</a>`;
 
   document.getElementById("site-header").innerHTML = `
@@ -22,7 +21,8 @@ function renderHeader(active) {
           <img src="assets/img/logo-horizontal.png" alt="Capoeira em Ação France - Mestre Cascavel">
         </a>
         <nav class="main-nav" id="main-nav">${links}</nav>
-        <a href="lieux.html" class="btn btn-red header-cta" style="padding:10px 22px;font-size:.9rem;margin-left:14px;">Rejoindre un cours</a>
+        <div id="lang-switcher" class="lang-switcher"></div>
+        <a href="lieux.html" class="btn btn-red header-cta" style="padding:10px 22px;font-size:.9rem;margin-left:14px;" data-i18n="nav_join">Rejoindre un cours</a>
         <button class="nav-toggle" id="nav-toggle" aria-label="Menu">&#9776;</button>
       </div>
     </header>
@@ -41,6 +41,7 @@ function renderHeader(active) {
   document.getElementById("nav-toggle").addEventListener("click", () => {
     document.getElementById("main-nav").classList.toggle("open");
   });
+  renderLangSwitcher();
 }
 
 function renderFooter() {
@@ -50,29 +51,29 @@ function renderFooter() {
         <div class="cols">
           <div>
             <h4>Capoeira em Ação France</h4>
-            <p style="max-width:340px;color:#b8b3af;font-size:.93rem;">
+            <p data-i18n="footer_desc" style="max-width:340px;color:#b8b3af;font-size:.93rem;">
               École de Capoeira affiliée à l'académie internationale du Mestre Cascavel.
               Cours, stages et événements en Île-de-France et à Aix-en-Provence.
             </p>
           </div>
           <div>
-            <h4>Navigation</h4>
-            <a href="capoeira.html">La Capoeira</a>
-            <a href="lieux.html">Nos lieux</a>
-            <a href="evenements.html">Événements</a>
-            <a href="galerie.html">Galerie</a>
+            <h4 data-i18n="footer_nav">Navigation</h4>
+            <a href="capoeira.html" data-i18n="nav_capoeira">La Capoeira</a>
+            <a href="lieux.html" data-i18n="nav_locations">Nos lieux</a>
+            <a href="evenements.html" data-i18n="nav_events">Événements</a>
+            <a href="galerie.html" data-i18n="nav_gallery">Galerie</a>
           </div>
           <div>
-            <h4>École</h4>
-            <a href="videos.html">Vidéos</a>
-            <a href="cours-en-ligne.html">Cours en ligne</a>
-            <a href="chansons.html">Chansons</a>
+            <h4 data-i18n="footer_school">École</h4>
+            <a href="videos.html" data-i18n="nav_videos">Vidéos</a>
+            <a href="cours-en-ligne.html" data-i18n="nav_courses">Cours en ligne</a>
+            <a href="chansons.html" data-i18n="nav_songs">Chansons</a>
           </div>
           <div>
-            <h4>Contact</h4>
-            <div id="footer-contact" style="color:#b8b3af;font-size:.93rem;padding:4px 0;">Chargement…</div>
+            <h4 data-i18n="footer_contact">Contact</h4>
+            <div id="footer-contact" data-i18n="footer_contact_loading" style="color:#b8b3af;font-size:.93rem;padding:4px 0;">Chargement…</div>
             <div id="footer-cotisation"></div>
-            <a href="admin/login.html">Espace admin</a>
+            <a href="admin/login.html" data-i18n="footer_admin">Espace admin</a>
           </div>
         </div>
         <div class="bottom">
@@ -99,6 +100,7 @@ function renderFooter() {
       if (cotisationEl && cotisationUrl) {
         cotisationEl.innerHTML = `<a href="${cotisationUrl}" target="_blank" rel="noopener" style="color:var(--red);font-weight:600;">Payer ma cotisation ↗</a>`;
       }
+      if (typeof applyTranslations === "function") applyTranslations();
     });
   }
 }

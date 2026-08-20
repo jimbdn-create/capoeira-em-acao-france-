@@ -12,16 +12,16 @@
 
 <section class="hero" style="padding:80px 0 100px;">
   <div class="wrap">
-    <div class="eyebrow">Agenda</div>
-    <h1>Événements <span class="accent">&amp; stages</span></h1>
-    <p class="lead">Cours réguliers, stages, batizados et rencontres internationales.</p>
+    <div class="eyebrow" data-i18n="page_events_eyebrow">Agenda</div>
+    <h1><span data-i18n="page_events_title1">Événements</span> <span class="accent" data-i18n="page_events_title_accent">&amp; stages</span></h1>
+    <p class="lead" data-i18n="page_events_lead">Cours réguliers, stages, batizados et rencontres internationales.</p>
   </div>
 </section>
 
 <section>
   <div class="wrap">
     <div id="events-list" class="grid grid-2">
-      <p style="color:var(--grey)">Chargement…</p>
+      <p style="color:var(--grey)" data-i18n="loading_generic">Chargement…</p>
     </div>
   </div>
 </section>
@@ -29,6 +29,7 @@
 <div id="site-footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/i18n.js"></script>
 <script src="assets/js/components.js"></script>
 <script>
   renderHeader("evenements.html");
@@ -50,7 +51,7 @@
       .from("events").select("*, locations(name)")
       .order("event_date", { ascending: true });
     if (error || !data || data.length === 0) {
-      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">📅</div>Aucun événement publié pour le moment. Revenez bientôt !</div>`;
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">📅</div>${(translations[getCurrentLang()]||translations.fr).empty_events}</div>`;
       return;
     }
     el.innerHTML = data.map(ev => {
@@ -81,6 +82,7 @@
     }).join("");
   }
   loadEvents();
+  applyTranslations();
 </script>
 </body>
 </html>

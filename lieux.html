@@ -6,22 +6,28 @@
 <title>Nos lieux de cours — Capoeira em Ação France</title>
 <link rel="icon" href="assets/img/logo-badge.png">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .slots-table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+  .slots-table th { text-align: left; font-family: var(--font-slant); text-transform: uppercase; font-size: .78rem; color: #cfcac6; padding: 8px 10px; border-bottom: 1px solid #3a3735; }
+  .slots-table td { padding: 10px; border-bottom: 1px solid #2c2a29; font-size: .9rem; color: var(--white); }
+  .slots-table tr:last-child td { border-bottom: none; }
+</style>
 </head>
 <body>
 <div id="site-header"></div>
 
 <section class="hero" style="padding:80px 0 100px;">
   <div class="wrap">
-    <div class="eyebrow">Île-de-France & Provence</div>
-    <h1>Nos <span class="accent">lieux</span> de cours</h1>
-    <p class="lead">Cinq sites de pratique : Longjumeau, Paris 13e, Cergy-le-Haut, Les Lilas et Aix-en-Provence.</p>
+    <div class="eyebrow" data-i18n="page_locations_eyebrow">Île-de-France & Provence</div>
+    <h1><span data-i18n="page_locations_title1">Nos</span> <span class="accent" data-i18n="page_locations_title_accent">lieux</span> <span data-i18n="page_locations_title2">de cours</span></h1>
+    <p class="lead" data-i18n="page_locations_lead">Cinq sites de pratique : Longjumeau, Paris 13e, Cergy-le-Haut, Les Lilas et Aix-en-Provence.</p>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div id="locations-list" class="grid grid-3">
-      <p style="color:var(--grey)">Chargement des lieux…</p>
+    <div id="locations-list" class="grid grid-2">
+      <p style="color:var(--grey)" data-i18n="loading_locations">Chargement des lieux…</p>
     </div>
   </div>
 </section>
@@ -29,6 +35,7 @@
 <div id="site-footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/i18n.js"></script>
 <script src="assets/js/components.js"></script>
 <script>
   renderHeader("lieux.html");
@@ -36,17 +43,36 @@
 
   async function loadLocations() {
     const el = document.getElementById("locations-list");
-    const { data, error } = await supabaseClient.from("locations").select("*").order("name");
+    const { data, error } = await supabaseClient
+      .from("locations")
+      .select("*, course_slots(*)")
+      .order("name");
     if (error || !data || data.length === 0) {
       el.innerHTML = `<div class="empty-state"><div class="icon">📍</div>Les lieux seront affichés ici dès que le contenu sera publié.</div>`;
       return;
     }
+    const t = translations[getCurrentLang()] || translations.fr;
     el.innerHTML = data.map(loc => {
       const contacts = [
-        loc.contact_whatsapp ? `<a href="https://wa.me/${loc.contact_whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent('Bonjour, je souhaite rejoindre le cours de capoeira à ' + loc.name)}" target="_blank" rel="noopener" class="btn btn-red" style="padding:10px 20px;font-size:.85rem;">Contacter sur WhatsApp</a>` : "",
-        loc.contact_email ? `<a href="mailto:${loc.contact_email}?subject=${encodeURIComponent('Inscription cours de capoeira - ' + loc.name)}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">Envoyer un e-mail</a>` : "",
-        loc.contact_phone ? `<a href="tel:${loc.contact_phone}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">Appeler</a>` : "",
+        loc.contact_whatsapp ? `<a href="https://wa.me/${loc.contact_whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent('Bonjour, je souhaite rejoindre le cours de capoeira à ' + loc.name)}" target="_blank" rel="noopener" class="btn btn-red" style="padding:10px 20px;font-size:.85rem;">${t.btn_whatsapp}</a>` : "",
+        loc.contact_email ? `<a href="mailto:${loc.contact_email}?subject=${encodeURIComponent('Inscription cours de capoeira - ' + loc.name)}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">${t.btn_email}</a>` : "",
+        loc.contact_phone ? `<a href="tel:${loc.contact_phone}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">${t.btn_call}</a>` : "",
       ].filter(Boolean).join(" ");
+
+      const slots = (loc.course_slots || []).sort((a, b) => (a.schedule || "").localeCompare(b.schedule || ""));
+      const slotsTable = slots.length ? `
+        <table class="slots-table">
+          <thead><tr><th>Horaire</th><th>Professeur</th><th>Notes</th></tr></thead>
+          <tbody>
+            ${slots.map(s => `
+              <tr>
+                <td>${s.schedule || "—"}</td>
+                <td>${s.teacher_name || "—"}</td>
+                <td>${s.notes || "—"}</td>
+              </tr>`).join("")}
+          </tbody>
+        </table>` : `<p style="color:#cfcac6;font-size:.9rem;margin-top:14px;">Aucun créneau renseigné pour le moment.</p>`;
+
       return `
       <div class="location-card" style="padding:0;overflow:hidden;">
         ${loc.image_url ? (
@@ -55,18 +81,18 @@
             : `<img src="${loc.image_url}" alt="${loc.name}" style="width:100%;aspect-ratio:16/10;object-fit:cover;">`
         ) : ""}
         <div style="padding:32px;">
-        <div class="tag">Lieu de cours</div>
-        <h3>${loc.name}</h3>
-        ${loc.schedule ? `<div class="meta">🕐 ${loc.schedule}</div>` : ""}
-        ${loc.address ? `<div class="meta">📍 ${loc.address}</div>` : ""}
-        ${loc.teacher_name ? `<div class="meta">👤 ${loc.teacher_name}</div>` : ""}
-        ${loc.description ? `<p style="color:#cfcac6;margin-top:12px;font-size:.9rem;">${loc.description}</p>` : ""}
-        ${contacts ? `<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">${contacts}</div>` : ""}
+          <div class="tag">Lieu de cours</div>
+          <h3>${loc.name}</h3>
+          ${loc.address ? `<div class="meta">📍 ${loc.address}</div>` : ""}
+          ${loc.description ? `<p style="color:#cfcac6;margin-top:12px;font-size:.9rem;">${loc.description}</p>` : ""}
+          ${slotsTable}
+          ${contacts ? `<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">${contacts}</div>` : ""}
         </div>
       </div>`;
     }).join("");
   }
   loadLocations();
+  applyTranslations();
 </script>
 </body>
 </html>

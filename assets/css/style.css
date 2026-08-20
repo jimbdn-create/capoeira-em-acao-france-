@@ -74,6 +74,10 @@ nav.main-nav a {
 }
 nav.main-nav a:hover, nav.main-nav a.active { background: var(--red); color: var(--white); }
 .header-cta { flex-shrink: 0; white-space: nowrap; }
+.lang-switcher { display: flex; gap: 4px; flex-shrink: 0; }
+.lang-flag { background: none; border: 2px solid transparent; border-radius: var(--radius); font-size: 1.3rem; line-height: 1; padding: 4px 6px; cursor: pointer; opacity: .55; transition: opacity .15s, border-color .15s; }
+.lang-flag:hover { opacity: 1; }
+.lang-flag.active { opacity: 1; border-color: var(--red); }
 .nav-toggle { display: none; background: none; border: none; color: var(--black); font-size: 1.8rem; cursor: pointer; flex-shrink: 0; }
 
 @media (max-width: 1400px) {

@@ -12,9 +12,9 @@
 
 <section class="hero" style="padding:80px 0 100px;">
   <div class="wrap">
-    <div class="eyebrow">Galerie</div>
-    <h1>Vidéos <span class="accent">& roda live</span></h1>
-    <p class="lead">Extraits de rodas, démonstrations et moments de stages.</p>
+    <div class="eyebrow" data-i18n="page_videos_eyebrow">Galerie</div>
+    <h1><span data-i18n="page_videos_title1">Vidéos</span> <span class="accent" data-i18n="page_videos_title_accent">& roda live</span></h1>
+    <p class="lead" data-i18n="page_videos_lead">Extraits de rodas, démonstrations et moments de stages.</p>
   </div>
 </section>
 
@@ -29,6 +29,7 @@
 <div id="site-footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/i18n.js"></script>
 <script src="assets/js/components.js"></script>
 <script>
   renderHeader("videos.html");
@@ -45,7 +46,7 @@
     const el = document.getElementById("video-gallery");
     const { data, error } = await supabaseClient.from("gallery_videos").select("*").order("created_at", { ascending: false });
     if (error || !data || data.length === 0) {
-      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">🎬</div>Aucune vidéo publiée pour le moment.</div>`;
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">🎬</div>${(translations[getCurrentLang()]||translations.fr).empty_videos}</div>`;
       return;
     }
     el.innerHTML = data.map(v => `
@@ -60,6 +61,7 @@
     `).join("");
   }
   loadVideos();
+  applyTranslations();
 </script>
 </body>
 </html>

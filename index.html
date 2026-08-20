@@ -18,8 +18,8 @@
     <h1><span data-key="home_hero_title_line1">La capoeira,</span><br><span data-key="home_hero_title_line2">art, jeu</span> <span class="accent" data-key="home_hero_title_accent">et combat</span></h1>
     <p class="lead" data-key="home_hero_lead">Capoeira em Ação France rassemble cinq lieux de pratique en Île-de-France et à Aix-en-Provence, pour tous les âges et tous les niveaux.</p>
     <div class="cta-row">
-      <a href="lieux.html" class="btn btn-red">Trouver un cours</a>
-      <a href="capoeira.html" class="btn btn-outline">Découvrir la capoeira</a>
+      <a href="lieux.html" class="btn btn-red" data-i18n="btn_find_course">Trouver un cours</a>
+      <a href="capoeira.html" class="btn btn-outline" data-i18n="btn_discover">Découvrir la capoeira</a>
     </div>
     <img id="hero-image" src="" alt="" style="display:none;width:100%;max-width:720px;margin-top:44px;border:3px solid var(--red);position:relative;z-index:1;">
   </div>
@@ -69,10 +69,10 @@
       <img id="locations-image" src="" alt="" style="display:none;width:100%;max-width:600px;margin-top:24px;border:1px solid var(--grey-line);">
     </div>
     <div id="locations-preview" class="grid grid-3">
-      <p style="color:var(--grey)">Chargement des lieux…</p>
+      <p style="color:var(--grey)" data-i18n="loading_locations">Chargement des lieux…</p>
     </div>
     <div style="margin-top:34px;">
-      <a href="lieux.html" class="btn btn-outline-dark">Voir tous les lieux et horaires</a>
+      <a href="lieux.html" class="btn btn-outline-dark" data-i18n="btn_see_all_locations">Voir tous les lieux et horaires</a>
     </div>
   </div>
 </section>
@@ -84,9 +84,9 @@
       <h2 data-key="home_events_title">Prochains événements</h2>
       <img id="events-image" src="" alt="" style="display:none;width:100%;max-width:600px;margin-top:24px;border:1px solid var(--grey-line);">
     </div>
-    <div id="events-preview"><p style="color:var(--grey)">Chargement des événements…</p></div>
+    <div id="events-preview"><p style="color:var(--grey)" data-i18n="loading_events">Chargement des événements…</p></div>
     <div style="margin-top:24px;">
-      <a href="evenements.html" class="btn btn-outline-dark">Voir le calendrier complet</a>
+      <a href="evenements.html" class="btn btn-outline-dark" data-i18n="btn_see_calendar">Voir le calendrier complet</a>
     </div>
   </div>
 </section>
@@ -95,6 +95,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/i18n.js"></script>
 <script src="assets/js/components.js"></script>
 <script>
   renderHeader("index.html");
@@ -136,7 +137,6 @@
       <div class="location-card">
         <div class="tag">Lieu de cours</div>
         <h3>${loc.name}</h3>
-        ${loc.schedule ? `<div class="meta">${loc.schedule}</div>` : ""}
         ${loc.address ? `<div class="meta">${loc.address}</div>` : ""}
       </div>
     `).join("");
@@ -171,6 +171,7 @@
 
   loadLocationsPreview();
   loadEventsPreview();
+  applyTranslations();
 </script>
 </body>
 </html>

@@ -69,12 +69,11 @@
       <div class="panel-cols">
         <div class="box">
           <h3 id="location-form-title">Ajouter un lieu</h3>
+          <p style="font-size:.85rem;color:var(--grey);margin-top:-8px;">Un lieu = une ville/site. Les horaires de cours se gèrent séparément juste en dessous, plusieurs par lieu.</p>
           <form id="form-location">
             <input type="hidden" id="loc-edit-id" value="">
             <div class="form-field"><label>Nom</label><input type="text" id="loc-name" required></div>
             <div class="form-field"><label>Adresse</label><input type="text" id="loc-address"></div>
-            <div class="form-field"><label>Horaires</label><input type="text" id="loc-schedule" placeholder="ex: Dimanche 14h-17h"></div>
-            <div class="form-field"><label>Professeur</label><input type="text" id="loc-teacher"></div>
             <div class="form-field"><label>Description</label><textarea id="loc-description"></textarea></div>
             <div class="form-field"><label>Photo du lieu (JPEG, GIF ou PDF) — laisse vide pour garder la photo actuelle</label><input type="file" id="loc-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="loc-photo-remove" style="width:auto;"> Retirer la photo actuelle (aucune photo)</label></div>
@@ -87,8 +86,29 @@
         </div>
         <div class="box">
           <h3>Lieux existants</h3>
-          <table class="admin-table"><thead><tr><th>Nom</th><th>Horaires</th><th></th></tr></thead>
+          <table class="admin-table"><thead><tr><th>Nom</th><th>Créneaux</th><th></th></tr></thead>
             <tbody id="locations-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel-cols" style="margin-top:28px;">
+        <div class="box">
+          <h3 id="slot-form-title">Ajouter un créneau de cours</h3>
+          <form id="form-slot">
+            <input type="hidden" id="sl-edit-id" value="">
+            <div class="form-field"><label>Lieu</label><select id="sl-location" required></select></div>
+            <div class="form-field"><label>Horaire</label><input type="text" id="sl-schedule" placeholder="ex: Lundi 19h-20h30" required></div>
+            <div class="form-field"><label>Professeur</label><input type="text" id="sl-teacher"></div>
+            <div class="form-field"><label>Notes (âge, niveau...)</label><input type="text" id="sl-notes" placeholder="ex: Cours enfants 5-13 ans"></div>
+            <button type="submit" id="sl-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
+            <button type="button" id="sl-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
+          </form>
+        </div>
+        <div class="box">
+          <h3>Tous les créneaux</h3>
+          <table class="admin-table"><thead><tr><th>Lieu</th><th>Horaire</th><th>Professeur</th><th></th></tr></thead>
+            <tbody id="slots-table"></tbody>
           </table>
         </div>
       </div>
@@ -394,12 +414,13 @@
   // --- LIEUX ---
   let locationsCache = [];
   async function loadLocations() {
-    const { data } = await supabaseClient.from("locations").select("*").order("name");
+    const { data } = await supabaseClient.from("locations").select("*, course_slots(id)").order("name");
     locationsCache = data || [];
     const tbody = document.getElementById("locations-table");
     const select = document.getElementById("ev-location");
+    const slotSelect = document.getElementById("sl-location");
     tbody.innerHTML = locationsCache.map(l => `
-      <tr><td>${l.name}</td><td>${l.schedule || "—"}</td>
+      <tr><td>${l.name}</td><td>${(l.course_slots || []).length} créneau(x)</td>
       <td class="row-actions">
         <button onclick="editLocation('${l.id}')">Modifier</button>
         <button onclick="deleteRow('locations','${l.id}', loadLocations)">Supprimer</button>
@@ -408,6 +429,7 @@
     select.innerHTML = `<option value="">— Choisir un lieu habituel —</option>` +
       locationsCache.map(l => `<option value="${l.id}">${l.name}</option>`).join("") +
       `<option value="__autre__">Autre (préciser)</option>`;
+    slotSelect.innerHTML = locationsCache.map(l => `<option value="${l.id}">${l.name}</option>`).join("");
   }
 
   function editLocation(id) {
@@ -416,8 +438,6 @@
     document.getElementById("loc-edit-id").value = l.id;
     document.getElementById("loc-name").value = l.name || "";
     document.getElementById("loc-address").value = l.address || "";
-    document.getElementById("loc-schedule").value = l.schedule || "";
-    document.getElementById("loc-teacher").value = l.teacher_name || "";
     document.getElementById("loc-description").value = l.description || "";
     document.getElementById("loc-whatsapp").value = l.contact_whatsapp || "";
     document.getElementById("loc-email").value = l.contact_email || "";
@@ -444,8 +464,6 @@
       const payload = {
         name: document.getElementById("loc-name").value,
         address: document.getElementById("loc-address").value,
-        schedule: document.getElementById("loc-schedule").value,
-        teacher_name: document.getElementById("loc-teacher").value,
         description: document.getElementById("loc-description").value,
         contact_whatsapp: document.getElementById("loc-whatsapp").value || null,
         contact_email: document.getElementById("loc-email").value || null,
@@ -468,6 +486,68 @@
     } catch (err) {
       alert(err.message);
     }
+  });
+
+  // --- CRÉNEAUX DE COURS ---
+  let slotsCache = [];
+  async function loadSlots() {
+    const { data } = await supabaseClient.from("course_slots").select("*, locations(name)").order("created_at");
+    slotsCache = data || [];
+    document.getElementById("slots-table").innerHTML = slotsCache.map(s => `
+      <tr>
+        <td>${s.locations ? s.locations.name : "—"}</td>
+        <td>${s.schedule || "—"}</td>
+        <td>${s.teacher_name || "—"}</td>
+        <td class="row-actions">
+          <button onclick="editSlot('${s.id}')">Modifier</button>
+          <button onclick="deleteRow('course_slots','${s.id}', () => { loadSlots(); loadLocations(); })">Supprimer</button>
+        </td>
+      </tr>
+    `).join("") || `<tr><td colspan="4">Aucun créneau.</td></tr>`;
+  }
+
+  function editSlot(id) {
+    const s = slotsCache.find(x => x.id === id);
+    if (!s) return;
+    document.getElementById("sl-edit-id").value = s.id;
+    document.getElementById("sl-location").value = s.location_id || "";
+    document.getElementById("sl-schedule").value = s.schedule || "";
+    document.getElementById("sl-teacher").value = s.teacher_name || "";
+    document.getElementById("sl-notes").value = s.notes || "";
+    document.getElementById("slot-form-title").textContent = "Modifier le créneau";
+    document.getElementById("sl-submit-btn").textContent = "Enregistrer les modifications";
+    document.getElementById("sl-cancel-btn").style.display = "block";
+    document.getElementById("panel-locations").scrollIntoView({ behavior: "smooth" });
+  }
+
+  document.getElementById("sl-cancel-btn").addEventListener("click", () => {
+    document.getElementById("form-slot").reset();
+    document.getElementById("sl-edit-id").value = "";
+    document.getElementById("slot-form-title").textContent = "Ajouter un créneau de cours";
+    document.getElementById("sl-submit-btn").textContent = "Ajouter";
+    document.getElementById("sl-cancel-btn").style.display = "none";
+  });
+
+  document.getElementById("form-slot").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const editId = document.getElementById("sl-edit-id").value;
+    const payload = {
+      location_id: document.getElementById("sl-location").value,
+      schedule: document.getElementById("sl-schedule").value,
+      teacher_name: document.getElementById("sl-teacher").value,
+      notes: document.getElementById("sl-notes").value,
+    };
+    const { error } = editId
+      ? await supabaseClient.from("course_slots").update(payload).eq("id", editId)
+      : await supabaseClient.from("course_slots").insert(payload);
+    if (error) { alert("Erreur : " + error.message); console.error(error); return; }
+    e.target.reset();
+    document.getElementById("sl-edit-id").value = "";
+    document.getElementById("slot-form-title").textContent = "Ajouter un créneau de cours";
+    document.getElementById("sl-submit-btn").textContent = "Ajouter";
+    document.getElementById("sl-cancel-btn").style.display = "none";
+    loadSlots();
+    loadLocations();
   });
 
   // --- EVENEMENTS ---
@@ -1105,6 +1185,7 @@
   });
 
   loadLocations();
+  loadSlots();
   loadEvents();
   loadPhotos();
   loadVideos();

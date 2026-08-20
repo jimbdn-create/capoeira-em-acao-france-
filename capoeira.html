@@ -12,9 +12,9 @@
 
 <section class="hero" style="padding:80px 0 100px;">
   <div class="wrap">
-    <div class="eyebrow">Art — Jeu — Combat — Musique</div>
-    <h1>Qu'est-ce que <span class="accent">la Capoeira</span> ?</h1>
-    <p class="lead">Née au Brésil du métissage des cultures africaines, la capoeira mêle mouvement martial, acrobatie, musique et tradition orale au sein d'une roda — le cercle où tout se joue.</p>
+    <div class="eyebrow" data-i18n="page_capoeira_eyebrow">Art — Jeu — Combat — Musique</div>
+    <h1><span data-i18n="page_capoeira_title1">Qu'est-ce que</span> <span class="accent" data-i18n="page_capoeira_title_accent">la Capoeira</span> ?</h1>
+    <p class="lead" data-i18n="page_capoeira_lead">Née au Brésil du métissage des cultures africaines, la capoeira mêle mouvement martial, acrobatie, musique et tradition orale au sein d'une roda — le cercle où tout se joue.</p>
   </div>
 </section>
 
@@ -56,10 +56,10 @@
 
 <section>
   <div class="wrap" style="text-align:center;">
-    <h2 style="font-family:var(--font-display);text-transform:uppercase;font-size:clamp(1.6rem,3vw,2.2rem);">Prêt à rejoindre une roda ?</h2>
+    <h2 style="font-family:var(--font-display);text-transform:uppercase;font-size:clamp(1.6rem,3vw,2.2rem);" data-i18n="cta_ready">Prêt à rejoindre une roda ?</h2>
     <div class="cta-row" style="justify-content:center;margin-top:20px;">
-      <a href="lieux.html" class="btn btn-red">Voir les lieux de cours</a>
-      <a href="evenements.html" class="btn btn-outline-dark">Voir les prochains stages</a>
+      <a href="lieux.html" class="btn btn-red" data-i18n="btn_see_locations">Voir les lieux de cours</a>
+      <a href="evenements.html" class="btn btn-outline-dark" data-i18n="btn_see_stages">Voir les prochains stages</a>
     </div>
   </div>
 </section>
@@ -67,7 +67,8 @@
 <div id="site-footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/i18n.js"></script>
 <script src="assets/js/components.js"></script>
-<script>renderHeader("capoeira.html"); renderFooter();</script>
+<script>renderHeader("capoeira.html"); renderFooter(); applyTranslations();</script>
 </body>
 </html>
