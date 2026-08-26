@@ -121,4 +121,26 @@ function renderFooter() {
       if (typeof applyTranslations === "function") applyTranslations();
     });
   }
+
+  renderBackToTop();
+}
+
+// Bouton flottant "retour en haut de page" — apparaît après un peu de défilement
+function renderBackToTop() {
+  if (document.getElementById("back-to-top")) return; // déjà présent, ne pas dupliquer
+
+  const btn = document.createElement("button");
+  btn.id = "back-to-top";
+  btn.className = "back-to-top";
+  btn.setAttribute("aria-label", "Remonter en haut de la page");
+  btn.innerHTML = "&#8593;";
+  document.body.appendChild(btn);
+
+  btn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  window.addEventListener("scroll", () => {
+    btn.classList.toggle("visible", window.scrollY > 400);
+  });
 }

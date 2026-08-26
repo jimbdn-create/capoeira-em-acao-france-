@@ -237,3 +237,44 @@ footer.site-footer .bottom { border-top: 1px solid #2c2a29; margin-top: 40px; pa
 
 .empty-state { text-align: center; padding: 60px 20px; color: var(--grey); }
 .empty-state .icon { font-size: 2.4rem; margin-bottom: 10px; }
+
+/* --- Bouton flottant "retour en haut" --- */
+.back-to-top {
+  position: fixed;
+  bottom: 26px;
+  right: 26px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,.28);
+  z-index: 300;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity .25s ease, visibility .25s ease, transform .25s ease, background .15s ease;
+}
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.back-to-top:hover { background: var(--red-dark); }
+
+@media (max-width: 640px) {
+  .back-to-top {
+    width: 44px;
+    height: 44px;
+    bottom: 18px;
+    right: 16px;
+    font-size: 1.15rem;
+  }
+}
