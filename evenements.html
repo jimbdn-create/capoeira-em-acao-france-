@@ -128,7 +128,7 @@
       cells += `
         <div class="cal-cell">
           <div class="cal-daynum">${day}</div>
-          ${dayEvents.map(ev => `<button class="cal-dot type-${ev.event_type}" onclick="openEventModal('${ev.id}')">${ev.title}</button>`).join("")}
+          ${dayEvents.map(ev => `<button class="cal-dot type-${ev.event_type}" onclick="openEventModal('${ev.id}')">${localizedField(ev, "title")}</button>`).join("")}
         </div>`;
     }
     document.getElementById("cal-grid").innerHTML = cells;
@@ -149,14 +149,14 @@
     ].join(" ");
 
     document.getElementById("event-modal-content").innerHTML = `
-      ${ev.image_url && !ev.image_url.toLowerCase().endsWith('.pdf') ? `<img src="${ev.image_url}" alt="${ev.title}">` : ""}
+      ${ev.image_url && !ev.image_url.toLowerCase().endsWith('.pdf') ? `<img src="${ev.image_url}" alt="${localizedField(ev, "title")}">` : ""}
       ${ev.video_url ? `<iframe src="${toEmbedUrl(ev.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : ""}
       <div class="event-modal-body">
         <span class="badge-type" style="margin-left:0;">${eventTypeLabel(ev.event_type)}</span>
-        <h2 style="font-family:var(--font-display);text-transform:uppercase;font-size:1.5rem;margin:10px 0 6px;">${ev.title}</h2>
+        <h2 style="font-family:var(--font-display);text-transform:uppercase;font-size:1.5rem;margin:10px 0 6px;">${localizedField(ev, "title")}</h2>
         <div style="color:var(--red);font-weight:600;font-size:.9rem;">${dateLabel}</div>
         ${lieu ? `<div style="color:var(--grey);font-size:.9rem;margin-top:2px;">📍 ${lieu}</div>` : ""}
-        ${ev.description ? `<p style="margin-top:14px;">${ev.description}</p>` : ""}
+        ${ev.description ? `<p style="margin-top:14px;">${localizedField(ev, "description")}</p>` : ""}
         ${links ? `<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">${links}</div>` : ""}
         ${ev.registration_url ? `<a href="${ev.registration_url}" target="_blank" rel="noopener" class="btn btn-red" style="width:100%;text-align:center;margin-top:22px;">S'inscrire / Réserver ma place</a>` : ""}
       </div>
@@ -181,6 +181,7 @@
   });
 
   loadEvents();
+  window.addEventListener("langchange", renderCalendar);
   applyTranslations();
 </script>
 </body>

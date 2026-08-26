@@ -131,10 +131,11 @@
         }
         return;
       }
-      document.querySelectorAll(`[data-key="${row.key}"]`).forEach(el => { el.textContent = row.value; });
+      document.querySelectorAll(`[data-key="${row.key}"]`).forEach(el => { el.textContent = localizedField(row, "value"); });
     });
   }
   loadSiteContent();
+  window.addEventListener("langchange", loadSiteContent);
 
   // Complète le balisage SEO avec les vrais liens sociaux (aide le référencement)
   supabaseClient.from("site_content").select("key, value").in("key", ["social_instagram_url", "social_facebook_url", "social_tiktok_url"]).then(({ data }) => {

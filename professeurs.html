@@ -79,13 +79,14 @@
           ${t.title ? `<div class="teacher-title">${t.title}</div>` : ""}
           <div class="teacher-name">${t.name}</div>
           ${t.location ? `<div class="teacher-location">📍 ${t.location}</div>` : ""}
-          ${t.description ? `<p style="color:var(--grey);font-size:.9rem;">${t.description}</p>` : ""}
+          ${t.description ? `<p style="color:var(--grey);font-size:.9rem;">${localizedField(t, "description")}</p>` : ""}
           ${social ? `<div class="teacher-social">${social}</div>` : ""}
         </div>
       </div>`;
     }).join("");
   }
   loadTeachers();
+  window.addEventListener("langchange", loadTeachers);
   applyTranslations();
 </script>
 </body>

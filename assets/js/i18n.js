@@ -152,6 +152,14 @@ function getCurrentLang() {
   return localStorage.getItem("site_lang") || "fr";
 }
 
+// Retourne le champ traduit d'un enregistrement (ex: localizedField(event, "title"))
+// Si la traduction n'existe pas dans la langue choisie, retourne le champ français par défaut.
+function localizedField(row, field) {
+  const lang = getCurrentLang();
+  if (lang !== "fr" && row[field + "_" + lang]) return row[field + "_" + lang];
+  return row[field] || "";
+}
+
 function applyTranslations() {
   const lang = getCurrentLang();
   const dict = translations[lang] || translations.fr;
@@ -168,6 +176,7 @@ function applyTranslations() {
 function setLang(lang) {
   localStorage.setItem("site_lang", lang);
   applyTranslations();
+  window.dispatchEvent(new Event("langchange"));
 }
 
 function renderLangSwitcher() {

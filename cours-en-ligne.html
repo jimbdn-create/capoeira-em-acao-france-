@@ -73,14 +73,14 @@
     }
     el.innerHTML = data.map(c => `
       <div class="card" style="padding:0;overflow:hidden;">
-        ${c.video_url ? `<iframe src="${toEmbedUrl(c.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : (c.thumbnail_url ? `<img src="${c.thumbnail_url}" alt="${c.title}" style="width:100%;aspect-ratio:16/9;object-fit:cover;">` : "")}
+        ${c.video_url ? `<iframe src="${toEmbedUrl(c.video_url)}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen loading="lazy"></iframe>` : (c.thumbnail_url ? `<img src="${c.thumbnail_url}" alt="${localizedField(c, "title")}" style="width:100%;aspect-ratio:16/9;object-fit:cover;">` : "")}
         <div style="padding:22px;">
           <div style="margin-bottom:8px;">
             <span class="pill ${c.access_level === 'eleves' ? 'pill-stage' : 'pill-cours'}">${c.access_level === 'eleves' ? (translations[getCurrentLang()]||translations.fr).pill_reserved : (translations[getCurrentLang()]||translations.fr).pill_public}</span>
           </div>
-          <h3 style="margin:0 0 6px;">${c.title}</h3>
+          <h3 style="margin:0 0 6px;">${localizedField(c, "title")}</h3>
           ${c.teacher_name ? `<div style="color:var(--red);font-family:var(--font-slant);font-weight:700;text-transform:uppercase;font-size:.85rem;margin-bottom:8px;">${c.teacher_name}</div>` : ""}
-          ${c.description ? `<p>${c.description}</p>` : ""}
+          ${c.description ? `<p>${localizedField(c, "description")}</p>` : ""}
         </div>
       </div>
     `).join("");
@@ -96,6 +96,7 @@
 
   renderStudentBar();
   loadCourses();
+  window.addEventListener("langchange", loadCourses);
   applyTranslations();
 </script>
 </body>

@@ -75,7 +75,9 @@
             <input type="hidden" id="loc-edit-id" value="">
             <div class="form-field"><label>Nom</label><input type="text" id="loc-name" required></div>
             <div class="form-field"><label>Adresse</label><input type="text" id="loc-address"></div>
-            <div class="form-field"><label>Description</label><textarea id="loc-description"></textarea></div>
+            <div class="form-field"><label>Description — Français</label><textarea id="loc-description"></textarea></div>
+            <div class="form-field"><label>🇬🇧 Description — Anglais (optionnel)</label><textarea id="loc-description-en"></textarea></div>
+            <div class="form-field"><label>🇧🇷 Description — Portugais (optionnel)</label><textarea id="loc-description-pt"></textarea></div>
             <div class="form-field"><label>Photo du lieu (JPEG, GIF ou PDF) — laisse vide pour garder la photo actuelle</label><input type="file" id="loc-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="loc-photo-remove" style="width:auto;"> Retirer la photo actuelle (aucune photo)</label></div>
             <div class="form-field"><label>WhatsApp (numéro avec indicatif, ex: 33612345678)</label><input type="text" id="loc-whatsapp" placeholder="33612345678"></div>
@@ -125,7 +127,9 @@
           <h3 id="event-form-title">Ajouter un événement</h3>
           <form id="form-event">
             <input type="hidden" id="ev-edit-id" value="">
-            <div class="form-field"><label>Titre</label><input type="text" id="ev-title" required></div>
+            <div class="form-field"><label>Titre — Français</label><input type="text" id="ev-title" required></div>
+            <div class="form-field"><label>🇬🇧 Titre — Anglais (optionnel)</label><input type="text" id="ev-title-en"></div>
+            <div class="form-field"><label>🇧🇷 Titre — Portugais (optionnel)</label><input type="text" id="ev-title-pt"></div>
 
             <div class="form-field"><label>Type</label>
               <select id="ev-type">
@@ -150,7 +154,9 @@
               <input type="text" id="ev-custom-location" placeholder="ex: São Paulo, Brésil / Rencontre Europe / Bruxelles">
             </div>
 
-            <div class="form-field"><label>Description</label><textarea id="ev-description"></textarea></div>
+            <div class="form-field"><label>Description — Français</label><textarea id="ev-description"></textarea></div>
+            <div class="form-field"><label>🇬🇧 Description — Anglais (optionnel)</label><textarea id="ev-description-en"></textarea></div>
+            <div class="form-field"><label>🇧🇷 Description — Portugais (optionnel)</label><textarea id="ev-description-pt"></textarea></div>
             <div class="form-field"><label>Photo (JPEG, GIF ou PDF) — laisse vide pour garder la photo actuelle</label><input type="file" id="ev-image" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="ev-image-remove" style="width:auto;"> Retirer la photo actuelle (aucune photo)</label></div>
             <div class="form-field"><label>Vidéo (URL YouTube)</label><input type="url" id="ev-video" placeholder="https://youtube.com/..."></div>
@@ -228,7 +234,9 @@
           <h3 id="course-form-title">Ajouter un cours en ligne</h3>
           <form id="form-course">
             <input type="hidden" id="cr-edit-id" value="">
-            <div class="form-field"><label>Titre</label><input type="text" id="cr-title" required></div>
+            <div class="form-field"><label>Titre — Français</label><input type="text" id="cr-title" required></div>
+            <div class="form-field"><label>🇬🇧 Titre — Anglais (optionnel)</label><input type="text" id="cr-title-en"></div>
+            <div class="form-field"><label>🇧🇷 Titre — Portugais (optionnel)</label><input type="text" id="cr-title-pt"></div>
             <div class="form-field"><label>Professeur</label><input type="text" id="cr-teacher"></div>
             <div class="form-field"><label>Accès</label>
               <select id="cr-access">
@@ -239,7 +247,9 @@
             <div class="form-field"><label>URL vidéo (YouTube)</label><input type="url" id="cr-url"></div>
             <div class="form-field"><label>Image miniature (JPEG, GIF ou PDF) — laisse vide pour garder l'actuelle</label><input type="file" id="cr-thumb" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="cr-thumb-remove" style="width:auto;"> Retirer la miniature actuelle (aucune photo)</label></div>
-            <div class="form-field"><label>Description</label><textarea id="cr-description"></textarea></div>
+            <div class="form-field"><label>Description — Français</label><textarea id="cr-description"></textarea></div>
+            <div class="form-field"><label>🇬🇧 Description — Anglais (optionnel)</label><textarea id="cr-description-en"></textarea></div>
+            <div class="form-field"><label>🇧🇷 Description — Portugais (optionnel)</label><textarea id="cr-description-pt"></textarea></div>
             <button type="submit" id="cr-submit-btn" class="btn btn-red" style="width:100%;">Ajouter</button>
             <button type="button" id="cr-cancel-btn" class="btn btn-outline-dark" style="width:100%;margin-top:8px;display:none;">Annuler la modification</button>
           </form>
@@ -287,7 +297,9 @@
             <div class="form-field"><label>Nom</label><input type="text" id="tc-name" required></div>
             <div class="form-field"><label>Titre / grade</label><input type="text" id="tc-title" placeholder="ex: Mestre, Contramestre, Professor"></div>
             <div class="form-field"><label>Lieu / pays</label><input type="text" id="tc-location" placeholder="ex: Paris, France"></div>
-            <div class="form-field"><label>Description</label><textarea id="tc-description"></textarea></div>
+            <div class="form-field"><label>Description — Français</label><textarea id="tc-description"></textarea></div>
+            <div class="form-field"><label>🇬🇧 Description — Anglais (optionnel)</label><textarea id="tc-description-en"></textarea></div>
+            <div class="form-field"><label>🇧🇷 Description — Portugais (optionnel)</label><textarea id="tc-description-pt"></textarea></div>
             <div class="form-field"><label>Photo (JPEG, GIF ou PDF) — laisse vide pour garder la photo actuelle</label><input type="file" id="tc-photo" accept=".jpg,.jpeg,.png,.gif,.pdf"></div>
             <div class="form-field"><label style="display:flex;align-items:center;gap:8px;font-weight:400;text-transform:none;"><input type="checkbox" id="tc-photo-remove" style="width:auto;"> Retirer la photo actuelle (aucune photo)</label></div>
             <div class="form-field"><label>Lien Instagram</label><input type="url" id="tc-instagram" placeholder="https://instagram.com/..."></div>
@@ -473,6 +485,8 @@
     document.getElementById("loc-name").value = l.name || "";
     document.getElementById("loc-address").value = l.address || "";
     document.getElementById("loc-description").value = l.description || "";
+    document.getElementById("loc-description-en").value = l.description_en || "";
+    document.getElementById("loc-description-pt").value = l.description_pt || "";
     document.getElementById("loc-whatsapp").value = l.contact_whatsapp || "";
     document.getElementById("loc-email").value = l.contact_email || "";
     document.getElementById("loc-phone").value = l.contact_phone || "";
@@ -499,6 +513,8 @@
         name: document.getElementById("loc-name").value,
         address: document.getElementById("loc-address").value,
         description: document.getElementById("loc-description").value,
+        description_en: document.getElementById("loc-description-en").value || null,
+        description_pt: document.getElementById("loc-description-pt").value || null,
         contact_whatsapp: document.getElementById("loc-whatsapp").value || null,
         contact_email: document.getElementById("loc-email").value || null,
         contact_phone: document.getElementById("loc-phone").value || null,
@@ -640,6 +656,8 @@
     if (!ev) return;
     document.getElementById("ev-edit-id").value = ev.id;
     document.getElementById("ev-title").value = ev.title || "";
+    document.getElementById("ev-title-en").value = ev.title_en || "";
+    document.getElementById("ev-title-pt").value = ev.title_pt || "";
     document.getElementById("ev-type").value = ev.event_type || "cours";
     document.getElementById("ev-start").value = toLocalInputValue(ev.event_date);
     document.getElementById("ev-end").value = toLocalInputValue(ev.end_date);
@@ -655,6 +673,8 @@
       document.getElementById("ev-custom-location-wrap").style.display = "none";
     }
     document.getElementById("ev-description").value = ev.description || "";
+    document.getElementById("ev-description-en").value = ev.description_en || "";
+    document.getElementById("ev-description-pt").value = ev.description_pt || "";
     document.getElementById("ev-video").value = ev.video_url || "";
     document.getElementById("ev-instagram").value = ev.instagram_url || "";
     document.getElementById("ev-facebook").value = ev.facebook_url || "";
@@ -702,12 +722,16 @@
 
     const payload = {
       title: document.getElementById("ev-title").value,
+      title_en: document.getElementById("ev-title-en").value || null,
+      title_pt: document.getElementById("ev-title-pt").value || null,
       event_date: new Date(startVal).toISOString(),
       end_date: endVal ? new Date(endVal).toISOString() : null,
       event_type: document.getElementById("ev-type").value,
       location_id: (!isCustom && locationVal) ? locationVal : null,
       location_other: isCustom ? document.getElementById("ev-custom-location").value : null,
       description: document.getElementById("ev-description").value,
+      description_en: document.getElementById("ev-description-en").value || null,
+      description_pt: document.getElementById("ev-description-pt").value || null,
       video_url: document.getElementById("ev-video").value || null,
       instagram_url: document.getElementById("ev-instagram").value || null,
       facebook_url: document.getElementById("ev-facebook").value || null,
@@ -887,10 +911,14 @@
     if (!c) return;
     document.getElementById("cr-edit-id").value = c.id;
     document.getElementById("cr-title").value = c.title || "";
+    document.getElementById("cr-title-en").value = c.title_en || "";
+    document.getElementById("cr-title-pt").value = c.title_pt || "";
     document.getElementById("cr-teacher").value = c.teacher_name || "";
     document.getElementById("cr-access").value = c.access_level || "public";
     document.getElementById("cr-url").value = c.video_url || "";
     document.getElementById("cr-description").value = c.description || "";
+    document.getElementById("cr-description-en").value = c.description_en || "";
+    document.getElementById("cr-description-pt").value = c.description_pt || "";
     document.getElementById("course-form-title").textContent = "Modifier le cours";
     document.getElementById("cr-submit-btn").textContent = "Enregistrer les modifications";
     document.getElementById("cr-cancel-btn").style.display = "block";
@@ -917,10 +945,14 @@
     }
     const payload = {
       title: document.getElementById("cr-title").value,
+      title_en: document.getElementById("cr-title-en").value || null,
+      title_pt: document.getElementById("cr-title-pt").value || null,
       teacher_name: document.getElementById("cr-teacher").value,
       access_level: document.getElementById("cr-access").value,
       video_url: document.getElementById("cr-url").value,
       description: document.getElementById("cr-description").value,
+      description_en: document.getElementById("cr-description-en").value || null,
+      description_pt: document.getElementById("cr-description-pt").value || null,
     };
     if (thumbUrl) payload.thumbnail_url = thumbUrl;
     else if (document.getElementById("cr-thumb-remove").checked) payload.thumbnail_url = null;
@@ -1107,12 +1139,21 @@
           </div>`;
       }
       const long = row.value.length > 60;
+      const esc = v => (v || "").replace(/"/g, '&quot;');
       return `
-        <div class="form-field">
-          <label>${label}</label>
+        <div class="form-field" style="border-bottom:1px solid var(--grey-line);padding-bottom:16px;margin-bottom:16px;">
+          <label>${label} <span style="color:var(--grey);font-weight:400;text-transform:none;">— Français</span></label>
           ${long
             ? `<textarea data-content-key="${row.key}">${row.value}</textarea>`
-            : `<input type="text" data-content-key="${row.key}" value="${row.value.replace(/"/g, '&quot;')}">`}
+            : `<input type="text" data-content-key="${row.key}" value="${esc(row.value)}">`}
+          <label style="margin-top:10px;">🇬🇧 <span style="color:var(--grey);font-weight:400;text-transform:none;">Anglais (optionnel)</span></label>
+          ${long
+            ? `<textarea data-content-key-en="${row.key}">${row.value_en || ""}</textarea>`
+            : `<input type="text" data-content-key-en="${row.key}" value="${esc(row.value_en)}">`}
+          <label style="margin-top:10px;">🇧🇷 <span style="color:var(--grey);font-weight:400;text-transform:none;">Portugais (optionnel)</span></label>
+          ${long
+            ? `<textarea data-content-key-pt="${row.key}">${row.value_pt || ""}</textarea>`
+            : `<input type="text" data-content-key-pt="${row.key}" value="${esc(row.value_pt)}">`}
         </div>`;
     }).join("");
   }
@@ -1122,9 +1163,15 @@
     statusEl.textContent = "Enregistrement…";
 
     try {
-      // Champs texte
-      const textFields = document.querySelectorAll("[data-content-key]");
-      const textUpdates = Array.from(textFields).map(f => ({ key: f.dataset.contentKey, value: f.value }));
+      // Champs texte (FR/EN/PT regroupés par clé)
+      const keys = new Set();
+      document.querySelectorAll("[data-content-key]").forEach(f => keys.add(f.dataset.contentKey));
+      const textUpdates = Array.from(keys).map(key => {
+        const frEl = document.querySelector(`[data-content-key="${key}"]`);
+        const enEl = document.querySelector(`[data-content-key-en="${key}"]`);
+        const ptEl = document.querySelector(`[data-content-key-pt="${key}"]`);
+        return { key, value: frEl ? frEl.value : "", value_en: enEl ? enEl.value : null, value_pt: ptEl ? ptEl.value : null };
+      });
 
       // Champs image : n'envoie que si un nouveau fichier a été choisi, sinon garde l'ancienne valeur
       const imageFields = document.querySelectorAll("[data-content-image-key]");
@@ -1238,6 +1285,8 @@
     document.getElementById("tc-title").value = t.title || "";
     document.getElementById("tc-location").value = t.location || "";
     document.getElementById("tc-description").value = t.description || "";
+    document.getElementById("tc-description-en").value = t.description_en || "";
+    document.getElementById("tc-description-pt").value = t.description_pt || "";
     document.getElementById("tc-instagram").value = t.instagram_url || "";
     document.getElementById("tc-facebook").value = t.facebook_url || "";
     document.getElementById("tc-tiktok").value = t.tiktok_url || "";
@@ -1270,6 +1319,8 @@
       title: document.getElementById("tc-title").value,
       location: document.getElementById("tc-location").value,
       description: document.getElementById("tc-description").value,
+      description_en: document.getElementById("tc-description-en").value || null,
+      description_pt: document.getElementById("tc-description-pt").value || null,
       instagram_url: document.getElementById("tc-instagram").value || null,
       facebook_url: document.getElementById("tc-facebook").value || null,
       tiktok_url: document.getElementById("tc-tiktok").value || null,
