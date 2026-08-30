@@ -38,6 +38,9 @@
     <div class="eyebrow" data-i18n="page_events_eyebrow">Agenda</div>
     <h1><span data-i18n="page_events_title1">Événements</span> <span class="accent" data-i18n="page_events_title_accent">&amp; stages</span></h1>
     <p class="lead" data-i18n="page_events_lead">Cours réguliers, stages, batizados et rencontres internationales.</p>
+    <div class="cta-row" id="teampulse-cta" style="display:none;margin-top:24px;">
+      <a href="#" id="teampulse-subscribe-link" class="btn btn-outline">📆 S'abonner au calendrier TeamPulse</a>
+    </div>
   </div>
 </section>
 
@@ -87,6 +90,20 @@
   let allEvents = [];
   let viewDate = new Date();
   viewDate.setDate(1);
+
+  // Bouton "S'abonner au calendrier TeamPulse" — affiché seulement si un lien est renseigné dans le back-office
+  async function loadTeamPulseCalendar() {
+    const { data } = await supabaseClient
+      .from("site_content").select("value").eq("key", "teampulse_calendar_url").maybeSingle();
+    if (data?.value) {
+      const link = document.getElementById("teampulse-subscribe-link");
+      link.href = data.value;
+      // webcal:// ouvre directement l'app calendrier ; un lien https classique s'ouvre dans un nouvel onglet
+      if (!data.value.startsWith("webcal://")) link.target = "_blank";
+      document.getElementById("teampulse-cta").style.display = "block";
+    }
+  }
+  loadTeamPulseCalendar();
 
   async function loadEvents() {
     const { data } = await supabaseClient.from("events").select("*, locations(name)").order("event_date");
