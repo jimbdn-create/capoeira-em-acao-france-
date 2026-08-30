@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aperçu — Bouton TeamPulse</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;1,700&family=Inter:wght@400;500;600;700&display=swap');
+:root {
+  --red: #C41E1E; --red-dark: #8f1414; --black: #161414; --white: #ffffff;
+  --grey: #6b6b6b; --grey-light: #f4f2f0; --grey-line: #e2dedb;
+  --font-display: 'Anton', sans-serif; --font-slant: 'Barlow Condensed', sans-serif; --font-body: 'Inter', sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font-body); background: var(--grey-light); padding: 40px 20px; }
+.wrap { max-width: 900px; margin: 0 auto; }
+.label { font-family: var(--font-slant); text-transform: uppercase; font-weight: 700; font-size: .85rem; color: var(--grey); margin: 32px 0 10px; letter-spacing: .5px; }
+.label:first-child { margin-top: 0; }
+
+/* --- Reproduction du .hero du site --- */
+.hero { position: relative; background: var(--black); color: var(--white); padding: 60px 40px; overflow: hidden; }
+.hero::after { content:''; position:absolute; right:-10%; top:-20%; width:60%; height:140%; background:var(--red); opacity:.12; clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%); }
+.hero .eyebrow { font-family: var(--font-slant); text-transform: uppercase; color: var(--red); font-weight: 700; letter-spacing: 1px; font-size: .9rem; position:relative; z-index:1; }
+.hero h1 { font-family: var(--font-display); text-transform: uppercase; font-size: 2.6rem; margin: 8px 0 14px; position:relative; z-index:1; }
+.hero h1 .accent { color: var(--red); }
+.hero .lead { color: #cfcac6; max-width: 480px; position:relative; z-index:1; margin:0; }
+.btn { display:inline-block; padding: 12px 26px; font-family: var(--font-slant); font-weight:700; text-transform:uppercase; font-size:.9rem; letter-spacing:.4px; border-radius:2px; border:2px solid transparent; cursor:pointer; }
+.btn-outline { border-color: var(--white); color: var(--white); background:transparent; }
+.cta-row { margin-top: 24px; position:relative; z-index:1; }
+
+/* --- Reproduction du champ dashboard --- */
+.box { background: var(--white); border: 1px solid var(--grey-line); padding: 28px; max-width: 520px; }
+.box h3 { font-family: var(--font-slant); text-transform: uppercase; font-weight:700; font-size:1.1rem; margin:0 0 4px; }
+.box p { color: var(--grey); font-size: .85rem; margin: 0 0 18px; }
+.form-field label { font-family: var(--font-slant); text-transform: uppercase; font-size: .78rem; font-weight:700; color:var(--black); display:block; margin-bottom:6px; }
+.form-field input { width:100%; padding:10px 12px; border:1px solid var(--grey-line); border-radius:2px; font-family:var(--font-body); font-size:.9rem; color:var(--grey); }
+.btn-red { background: var(--red); color: var(--white); width:100%; margin-top:14px; border:none; padding:12px; }
+.note { font-size:.8rem; color:var(--grey); margin-top:14px; background:#fdf6ec; border-left:3px solid #c89b3c; padding:10px 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="label">1 — Dans le dashboard, tant que le champ est vide</div>
+  <div class="box">
+    <h3>📆 Calendrier TeamPulse</h3>
+    <p>Colle ici le lien d'export calendrier (.ics) de TeamPulse.</p>
+    <div class="form-field">
+      <label>Lien calendrier TeamPulse</label>
+      <input type="url" placeholder="https://... ou webcal://..." value="">
+    </div>
+    <button class="btn btn-red">Enregistrer le lien</button>
+    <div class="note">Tant qu'aucun lien n'est enregistré ici, le bouton reste invisible sur le site (c'est normal).</div>
+  </div>
+
+  <div class="label">2 — Une fois le lien collé et enregistré</div>
+  <div class="box">
+    <h3>📆 Calendrier TeamPulse</h3>
+    <p>Colle ici le lien d'export calendrier (.ics) de TeamPulse.</p>
+    <div class="form-field">
+      <label>Lien calendrier TeamPulse</label>
+      <input type="url" value="https://teampulse.app/calendar/abc123.ics" style="color:var(--black);">
+    </div>
+    <button class="btn btn-red">Enregistrer le lien</button>
+    <div class="note" style="border-left-color:#1e7a34;background:#eef8ef;">✅ Enregistré — le bouton apparaît maintenant sur le site (voir ci-dessous).</div>
+  </div>
+
+  <div class="label">3 — Résultat sur la page "Événements" du site</div>
+  <div class="hero">
+    <div class="eyebrow">Agenda</div>
+    <h1>Événements <span class="accent">&amp; stages</span></h1>
+    <p class="lead">Cours réguliers, stages, batizados et rencontres internationales.</p>
+    <div class="cta-row">
+      <a href="#" class="btn btn-outline">📆 S'abonner au calendrier TeamPulse</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
