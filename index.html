@@ -151,18 +151,27 @@
     } catch (e) {}
   });
 
+  let locationsPreviewData = [];
+
   async function loadLocationsPreview() {
     const el = document.getElementById("locations-preview");
-    const { data, error } = await supabaseClient.from("locations").select("*").limit(3);
+    const { data, error } = await supabaseClient
+      .from("locations")
+      .select("*, course_slots(*)")
+      .limit(3);
     if (error || !data || data.length === 0) {
       el.innerHTML = `<p style="color:var(--grey)">Les lieux seront affichés ici dès que le contenu sera publié.</p>`;
       return;
     }
-    el.innerHTML = data.map(loc => `
-      <div class="location-card">
+    locationsPreviewData = data;
+    el.innerHTML = data.map((loc, i) => `
+      <div class="location-card clickable" tabindex="0" role="button" aria-haspopup="dialog"
+           aria-label="Voir les infos de ${loc.name}" onclick="openLocationModal(locationsPreviewData[${i}])"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openLocationModal(locationsPreviewData[${i}]);}">
         <div class="tag">Lieu de cours</div>
         <h3>${loc.name}</h3>
         ${loc.address ? `<div class="meta">${loc.address}</div>` : ""}
+        <span class="see-more">Voir les infos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </div>
     `).join("");
   }

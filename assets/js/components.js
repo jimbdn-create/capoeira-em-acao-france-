@@ -144,3 +144,81 @@ function renderBackToTop() {
     btn.classList.toggle("visible", window.scrollY > 400);
   });
 }
+
+// ============================================
+// Modale "lieu de cours" — réutilisable sur toutes les pages.
+// Injecte le conteneur une seule fois, puis openLocationModal(loc) l'affiche.
+// ============================================
+function ensureLocationModal() {
+  if (document.getElementById("loc-modal-overlay")) return;
+  const overlay = document.createElement("div");
+  overlay.id = "loc-modal-overlay";
+  overlay.className = "loc-modal-overlay";
+  overlay.innerHTML = `
+    <div class="loc-modal-box" role="dialog" aria-modal="true">
+      <button class="loc-modal-close" id="loc-modal-close" aria-label="Fermer">&times;</button>
+      <div class="loc-modal-media" id="loc-modal-media" style="display:none;"></div>
+      <div class="loc-modal-body">
+        <div class="loc-modal-tag">Lieu de cours</div>
+        <h3 id="loc-modal-title"></h3>
+        <div id="loc-modal-address" class="meta"></div>
+        <p id="loc-modal-desc" class="loc-modal-desc"></p>
+        <div id="loc-modal-slots"></div>
+        <div id="loc-modal-actions" class="loc-modal-actions"></div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  document.getElementById("loc-modal-close").addEventListener("click", closeLocationModal);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeLocationModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLocationModal(); });
+}
+
+function openLocationModal(loc) {
+  ensureLocationModal();
+  const overlay = document.getElementById("loc-modal-overlay");
+  const t = (typeof translations !== "undefined" && translations[getCurrentLang()]) || {};
+
+  document.getElementById("loc-modal-title").textContent = loc.name || "";
+  document.getElementById("loc-modal-address").innerHTML = loc.address ? `📍 ${loc.address}` : "";
+  document.getElementById("loc-modal-desc").textContent =
+    (typeof localizedField === "function" ? localizedField(loc, "description") : loc.description) || "";
+
+  const media = document.getElementById("loc-modal-media");
+  if (loc.image_url && !loc.image_url.toLowerCase().endsWith(".pdf")) {
+    media.innerHTML = `<img src="${loc.image_url}" alt="${loc.name}">`;
+    media.style.display = "block";
+  } else {
+    media.innerHTML = "";
+    media.style.display = "none";
+  }
+
+  const slots = (loc.course_slots || []).sort((a, b) => (a.schedule || "").localeCompare(b.schedule || ""));
+  document.getElementById("loc-modal-slots").innerHTML = slots.length ? `
+    <table class="slots-table">
+      <thead><tr><th>Horaire</th><th>Professeur</th><th>Notes</th></tr></thead>
+      <tbody>
+        ${slots.map(s => `
+          <tr>
+            <td>${s.schedule || "—"}${s.address ? `<br><span style="color:#9c9793;font-size:.8rem;">${s.address}</span>` : ""}</td>
+            <td>${s.teacher_name || "—"}</td>
+            <td>${s.notes || "—"}</td>
+          </tr>`).join("")}
+      </tbody>
+    </table>` : (loc.schedule ? `<div class="meta" style="margin-top:14px;">🕒 ${loc.schedule}</div>` : "");
+
+  const actions = [
+    loc.contact_whatsapp ? `<a href="https://wa.me/${loc.contact_whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent('Bonjour, je souhaite rejoindre le cours de capoeira à ' + loc.name)}" target="_blank" rel="noopener" class="btn btn-red" style="padding:10px 20px;font-size:.85rem;">${t.btn_whatsapp || "WhatsApp"}</a>` : "",
+    loc.contact_email ? `<a href="mailto:${loc.contact_email}?subject=${encodeURIComponent('Inscription cours de capoeira - ' + loc.name)}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">${t.btn_email || "Email"}</a>` : "",
+    loc.contact_phone ? `<a href="tel:${loc.contact_phone}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">${t.btn_call || "Appeler"}</a>` : "",
+  ].filter(Boolean).join(" ");
+  document.getElementById("loc-modal-actions").innerHTML = actions;
+
+  overlay.classList.add("open");
+  document.getElementById("loc-modal-close").focus();
+}
+
+function closeLocationModal() {
+  const overlay = document.getElementById("loc-modal-overlay");
+  if (overlay) overlay.classList.remove("open");
+}
