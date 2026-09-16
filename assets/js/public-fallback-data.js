@@ -6,7 +6,7 @@
   const instagram = "https://www.instagram.com/capoeira.em.acao.france/";
   const capoeiraStreetRegistration = "https://www.helloasso.com/associations/capoeira-street-et-disciplines-associees-capoeira-street-d-a/adhesions/adhesion-annuelle-2026-2027";
   const cergyRegistration = "https://www.helloasso.com/beta/associations/luta-na-danca/adhesions/inscription-cours-de-capoeira-2026-2027";
-  const aixRegistration = "https://www.helloasso.com/associations/association-capoeira-em-acao-france";
+  const aixRegistration = "https://www.helloasso.com/beta/associations/association-capoeira-em-acao-france/adhesions/adhesion-annuelle-2026-2027";
 
   function getRegistrationUrl(locationName) {
     const name = (locationName || "").toLocaleLowerCase("fr-FR");

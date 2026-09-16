@@ -60,7 +60,7 @@ function runPageIntegrationTests() {
   );
   assert.equal(
     fallback.getRegistrationUrl('Aix-en-Provence (CREPS)'),
-    'https://www.helloasso.com/associations/association-capoeira-em-acao-france',
+    'https://www.helloasso.com/beta/associations/association-capoeira-em-acao-france/adhesions/adhesion-annuelle-2026-2027',
     'La page HelloAsso Association Capoeira em Ação France doit être associée uniquement à Aix-en-Provence',
   );
 
