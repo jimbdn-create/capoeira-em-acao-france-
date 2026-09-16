@@ -48,7 +48,17 @@ function runPageIntegrationTests() {
     'Le lien officiel doit être retrouvé pour Paris 13e');
   assert.match(fallback.getRegistrationUrl('Acrobaties (Longjumeau)') || '', /helloasso\.com/,
     'Le lien officiel doit être retrouvé pour le cours Acrobaties à Longjumeau');
-  assert.equal(fallback.getRegistrationUrl('Cergy'), '', 'Le lien Capoeira Street ne doit pas être appliqué aux autres associations');
+  assert.equal(
+    fallback.getRegistrationUrl('Cergy'),
+    'https://www.helloasso.com/beta/associations/luta-na-danca/adhesions/inscription-cours-de-capoeira-2026-2027',
+    'Le formulaire Luta Na Dança doit être associé uniquement à Cergy',
+  );
+  assert.equal(
+    fallback.getRegistrationUrl('Les Lilas'),
+    'https://www.helloasso.com/beta/associations/association-orion-capoeira/adhesions/adhesion-capoeira-et-ou-hip-hop-2026-2027',
+    'Le formulaire Association Orion Capoeira doit être associé uniquement aux Lilas',
+  );
+  assert.equal(fallback.getRegistrationUrl('Aix-en-Provence (CREPS)'), '', 'Le lien des Lilas ne doit pas être appliqué aux autres associations');
 
   const components = read('assets/js/components.js');
   assert.match(components, /CEA_FALLBACK/, 'Le pied de page doit disposer de contacts de secours');

@@ -5,12 +5,15 @@
 })(typeof window !== "undefined" ? window : globalThis, function () {
   const instagram = "https://www.instagram.com/capoeira.em.acao.france/";
   const capoeiraStreetRegistration = "https://www.helloasso.com/associations/capoeira-street-et-disciplines-associees-capoeira-street-d-a/adhesions/adhesion-annuelle-2026-2027";
+  const cergyRegistration = "https://www.helloasso.com/beta/associations/luta-na-danca/adhesions/inscription-cours-de-capoeira-2026-2027";
+  const lesLilasRegistration = "https://www.helloasso.com/beta/associations/association-orion-capoeira/adhesions/adhesion-capoeira-et-ou-hip-hop-2026-2027";
 
   function getRegistrationUrl(locationName) {
     const name = (locationName || "").toLocaleLowerCase("fr-FR");
-    return name.includes("longjumeau") || name.includes("paris 13")
-      ? capoeiraStreetRegistration
-      : "";
+    if (name.includes("longjumeau") || name.includes("paris 13")) return capoeiraStreetRegistration;
+    if (name.includes("cergy")) return cergyRegistration;
+    if (name.includes("lilas")) return lesLilasRegistration;
+    return "";
   }
 
   return {
@@ -55,6 +58,7 @@
         contact_email: "yves_barros@live.fr",
         contact_phone: "0667639357",
         contact_instagram: instagram,
+        registration_url: cergyRegistration,
         course_slots: [
           { schedule: "Lundi 19h00–20h30", teacher_name: "Formado Diamante (Yves Barros)", notes: "Tous niveaux" },
           { schedule: "Mercredi 20h00–21h30", teacher_name: "Formado Diamante (Yves Barros)", notes: "Tous niveaux" },
@@ -69,6 +73,7 @@
         contact_email: "capoeira.ebc.orioncapoeira@gmail.com",
         contact_phone: "33666107579",
         contact_instagram: instagram,
+        registration_url: lesLilasRegistration,
         course_slots: [
           { schedule: "Jeudi 17h45–18h45", teacher_name: "Prof. Dadão / Grad. Lagrima", notes: "Dès 5 ans" },
         ],
