@@ -55,10 +55,10 @@ function runPageIntegrationTests() {
   );
   assert.equal(
     fallback.getRegistrationUrl('Les Lilas'),
-    'https://www.helloasso.com/beta/associations/association-orion-capoeira/adhesions/adhesion-capoeira-et-ou-hip-hop-2026-2027',
-    'Le formulaire Association Orion Capoeira doit être associé uniquement aux Lilas',
+    '',
+    'Le formulaire Association Orion Capoeira ne doit pas être attribué sans antenne confirmée',
   );
-  assert.equal(fallback.getRegistrationUrl('Aix-en-Provence (CREPS)'), '', 'Le lien des Lilas ne doit pas être appliqué aux autres associations');
+  assert.equal(fallback.getRegistrationUrl('Aix-en-Provence (CREPS)'), '', 'Aucun formulaire non confirmé ne doit être appliqué à Aix-en-Provence');
 
   const components = read('assets/js/components.js');
   assert.match(components, /CEA_FALLBACK/, 'Le pied de page doit disposer de contacts de secours');
