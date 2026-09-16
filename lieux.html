@@ -37,6 +37,14 @@
 
 <section>
   <div class="wrap">
+    <div class="card" style="margin-bottom:32px;border-left:4px solid var(--red);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+      <div>
+        <div class="eyebrow" style="color:var(--red);font-family:var(--font-slant);font-weight:700;text-transform:uppercase;letter-spacing:1px;">Cours d'essai gratuit</div>
+        <h2 style="font-family:var(--font-display);text-transform:uppercase;margin:4px 0 6px;font-size:1.6rem;">Choisissez votre ville et venez essayer</h2>
+        <p style="margin:0;color:var(--grey);">Débutants bienvenus. Écrivez-nous pour confirmer le créneau adapté à votre âge et à votre niveau.</p>
+      </div>
+      <a href="https://www.instagram.com/capoeira.em.acao.france/" target="_blank" rel="noopener" class="btn btn-red">Écrire sur Instagram</a>
+    </div>
     <div id="locations-list" class="grid grid-2">
       <p style="color:var(--grey)" data-i18n="loading_locations">Chargement des lieux…</p>
     </div>
@@ -44,6 +52,7 @@
 </section>
 
 <div id="site-footer"></div>
+<script src="assets/js/public-fallback-data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js"></script>
 <script src="assets/js/i18n.js"></script>
@@ -71,10 +80,14 @@
 
   async function loadLocations() {
     const el = document.getElementById("locations-list");
-    const { data, error } = await supabaseClient
+    let { data, error } = await supabaseClient
       .from("locations")
       .select("*, course_slots(*)")
       .order("name");
+    if (error || !data || data.length === 0) {
+      data = window.CEA_FALLBACK.locations;
+      error = null;
+    }
     if (error || !data || data.length === 0) {
       el.innerHTML = `<div class="empty-state"><div class="icon">📍</div>Les lieux seront affichés ici dès que le contenu sera publié.</div>`;
       return;
@@ -82,8 +95,12 @@
     const t = translations[getCurrentLang()] || translations.fr;
     el.innerHTML = data.map((loc, locIndex) => {
       const cardId = `loc-card-${locIndex}`;
+      const instagramUrl = loc.contact_instagram || window.CEA_FALLBACK.general.instagram;
+      const registrationUrl = loc.registration_url || window.CEA_FALLBACK.getRegistrationUrl(loc.name);
       const contacts = [
+        registrationUrl ? `<a href="${registrationUrl}" target="_blank" rel="noopener" class="btn btn-red" style="padding:10px 20px;font-size:.85rem;">S'inscrire sur HelloAsso</a>` : "",
         loc.contact_whatsapp ? `<a href="https://wa.me/${loc.contact_whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent('Bonjour, je souhaite rejoindre le cours de capoeira à ' + loc.name)}" target="_blank" rel="noopener" class="btn btn-red" style="padding:10px 20px;font-size:.85rem;">${t.btn_whatsapp}</a>` : "",
+        instagramUrl ? `<a href="${instagramUrl}" target="_blank" rel="noopener" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">Instagram</a>` : "",
         loc.contact_email ? `<a href="mailto:${loc.contact_email}?subject=${encodeURIComponent('Inscription cours de capoeira - ' + loc.name)}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">${t.btn_email}</a>` : "",
         loc.contact_phone ? `<a href="tel:${loc.contact_phone}" class="btn btn-outline" style="padding:10px 20px;font-size:.85rem;">${t.btn_call}</a>` : "",
       ].filter(Boolean).join(" ");

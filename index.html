@@ -26,9 +26,10 @@
   <div class="wrap">
     <div class="eyebrow" data-key="home_hero_eyebrow">École affiliée — Mestre Cascavel</div>
     <h1><span data-key="home_hero_title_line1">La capoeira,</span><br><span data-key="home_hero_title_line2">art, jeu</span> <span class="accent" data-key="home_hero_title_accent">et combat</span></h1>
-    <p class="lead" data-key="home_hero_lead">Capoeira em Ação France rassemble cinq lieux de pratique en Île-de-France et à Aix-en-Provence, pour tous les âges et tous les niveaux.</p>
+    <p class="lead" data-key="home_hero_lead">Capoeira em Ação France rassemble cinq lieux de pratique en Île-de-France et à Aix-en-Provence. Débutants bienvenus : votre cours d'essai est gratuit.</p>
     <div class="cta-row">
-      <a href="lieux.html" class="btn btn-red" data-i18n="btn_find_course">Trouver un cours</a>
+      <a href="lieux.html" class="btn btn-red">Choisir mon cours d'essai gratuit</a>
+      <a href="https://www.instagram.com/capoeira.em.acao.france/" target="_blank" rel="noopener" class="btn btn-outline">Écrire sur Instagram</a>
       <a href="capoeira.html" class="btn btn-outline" data-i18n="btn_discover">Découvrir la capoeira</a>
     </div>
     <img id="hero-image" src="" alt="" style="display:none;width:100%;max-width:720px;margin-top:44px;border:3px solid var(--red);position:relative;z-index:1;">
@@ -103,6 +104,7 @@
 
 <div id="site-footer"></div>
 
+<script src="assets/js/public-fallback-data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js"></script>
 <script src="assets/js/i18n.js"></script>
@@ -155,10 +157,14 @@
 
   async function loadLocationsPreview() {
     const el = document.getElementById("locations-preview");
-    const { data, error } = await supabaseClient
+    let { data, error } = await supabaseClient
       .from("locations")
       .select("*, course_slots(*)")
       .limit(3);
+    if (error || !data || data.length === 0) {
+      data = window.CEA_FALLBACK.locations.slice(0, 3);
+      error = null;
+    }
     if (error || !data || data.length === 0) {
       el.innerHTML = `<p style="color:var(--grey)">Les lieux seront affichés ici dès que le contenu sera publié.</p>`;
       return;

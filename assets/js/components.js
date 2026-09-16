@@ -84,6 +84,18 @@ function renderFooter() {
     </footer>
   `;
 
+  const renderFallbackFooter = () => {
+    if (!window.CEA_FALLBACK) return;
+    const contactEl = document.getElementById("footer-contact");
+    const socialEl = document.getElementById("footer-social");
+    const email = window.CEA_FALLBACK.general.email;
+    const instagram = window.CEA_FALLBACK.general.instagram;
+    if (contactEl) contactEl.innerHTML = `<a href="mailto:${email}">${email}</a>`;
+    if (socialEl) {
+      socialEl.innerHTML = `<a href="${instagram}" target="_blank" rel="noopener" aria-label="Instagram" style="width:34px;height:34px;border-radius:50%;background:#221f1e;display:flex;align-items:center;justify-content:center;color:#fff;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>`;
+    }
+  };
+
   // Charge l'email/téléphone de contact général depuis le contenu du site (modifiable dans le dashboard admin)
   if (typeof supabaseClient !== "undefined") {
     supabaseClient.from("site_content").select("key, value").in("key", [
@@ -91,7 +103,10 @@ function renderFooter() {
       "social_instagram_url", "social_facebook_url", "social_tiktok_url"
     ]).then(({ data }) => {
       const el = document.getElementById("footer-contact");
-      if (!el || !data) return;
+      if (!el || !data || data.length === 0) {
+        renderFallbackFooter();
+        return;
+      }
       const email = data.find(r => r.key === "contact_general_email")?.value;
       const phone = data.find(r => r.key === "contact_general_phone")?.value;
       const cotisationUrl = data.find(r => r.key === "cotisation_url")?.value;
@@ -119,7 +134,9 @@ function renderFooter() {
       }
 
       if (typeof applyTranslations === "function") applyTranslations();
-    });
+    }).catch(renderFallbackFooter);
+  } else {
+    renderFallbackFooter();
   }
 
   renderBackToTop();
