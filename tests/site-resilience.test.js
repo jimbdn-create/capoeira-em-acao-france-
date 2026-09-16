@@ -58,7 +58,11 @@ function runPageIntegrationTests() {
     '',
     'Le formulaire Association Orion Capoeira ne doit pas être attribué sans antenne confirmée',
   );
-  assert.equal(fallback.getRegistrationUrl('Aix-en-Provence (CREPS)'), '', 'Aucun formulaire non confirmé ne doit être appliqué à Aix-en-Provence');
+  assert.equal(
+    fallback.getRegistrationUrl('Aix-en-Provence (CREPS)'),
+    'https://www.helloasso.com/associations/association-capoeira-em-acao-france',
+    'La page HelloAsso Association Capoeira em Ação France doit être associée uniquement à Aix-en-Provence',
+  );
 
   const components = read('assets/js/components.js');
   assert.match(components, /CEA_FALLBACK/, 'Le pied de page doit disposer de contacts de secours');

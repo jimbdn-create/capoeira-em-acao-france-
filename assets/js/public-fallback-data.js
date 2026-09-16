@@ -6,13 +6,13 @@
   const instagram = "https://www.instagram.com/capoeira.em.acao.france/";
   const capoeiraStreetRegistration = "https://www.helloasso.com/associations/capoeira-street-et-disciplines-associees-capoeira-street-d-a/adhesions/adhesion-annuelle-2026-2027";
   const cergyRegistration = "https://www.helloasso.com/beta/associations/luta-na-danca/adhesions/inscription-cours-de-capoeira-2026-2027";
-
+  const aixRegistration = "https://www.helloasso.com/associations/association-capoeira-em-acao-france";
 
   function getRegistrationUrl(locationName) {
     const name = (locationName || "").toLocaleLowerCase("fr-FR");
     if (name.includes("longjumeau") || name.includes("paris 13")) return capoeiraStreetRegistration;
     if (name.includes("cergy")) return cergyRegistration;
-
+    if (name.includes("aix-en-provence")) return aixRegistration;
     return "";
   }
 
@@ -31,6 +31,7 @@
         contact_email: "capoeira.em.acao.fr@gmail.com",
         contact_phone: "0650610853",
         contact_instagram: instagram,
+        registration_url: aixRegistration,
         course_slots: [
           { schedule: "Lundi 18h00–18h45", teacher_name: "Contramestre Foguete", notes: "Enfants de 5 à 13 ans" },
           { schedule: "Lundi 19h00–20h00", teacher_name: "Contramestre Foguete", notes: "Adultes, 14 ans et plus" },
@@ -73,7 +74,6 @@
         contact_email: "capoeira.ebc.orioncapoeira@gmail.com",
         contact_phone: "33666107579",
         contact_instagram: instagram,
-
         course_slots: [
           { schedule: "Jeudi 17h45–18h45", teacher_name: "Prof. Dadão / Grad. Lagrima", notes: "Dès 5 ans" },
         ],
